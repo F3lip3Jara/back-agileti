@@ -1,0 +1,92 @@
+[
+	{
+		"idOptSub" : 1,
+		"empId" : 1,
+		"idOpt" : 14,
+		"optSDes" : "País",
+		"optSLink" : "parametros/pais",
+		"created_at" : "2023-10-16 14:53:33",
+		"updated_at" : "2023-10-16 14:53:33"
+	},
+	{
+		"idOptSub" : 2,
+		"empId" : 1,
+		"idOpt" : 14,
+		"optSDes" : "Región",
+		"optSLink" : "parametros/region",
+		"created_at" : "2023-10-16 14:53:33",
+		"updated_at" : "2023-10-16 14:53:33"
+	},
+	{
+		"idOptSub" : 3,
+		"empId" : 1,
+		"idOpt" : 14,
+		"optSDes" : "Ciudad",
+		"optSLink" : "parametros/ciudad",
+		"created_at" : "2023-10-16 14:53:33",
+		"updated_at" : "2023-10-16 14:53:33"
+	},
+	{
+		"idOptSub" : 4,
+		"empId" : 1,
+		"idOpt" : 14,
+		"optSDes" : "Comuna",
+		"optSLink" : "parametros/comuna",
+		"created_at" : "2023-10-16 14:53:33",
+		"updated_at" : "2023-10-16 14:53:33"
+	},
+	{
+		"idOptSub" : 5,
+		"empId" : 1,
+		"idOpt" : 18,
+		"optSDes" : "Color",
+		"optSLink" : "parametros/color",
+		"created_at" : "2023-10-16 14:53:33",
+		"updated_at" : "2023-10-16 14:53:33"
+	},
+	{
+		"idOptSub" : 6,
+		"empId" : 1,
+		"idOpt" : 18,
+		"optSDes" : "Grupo",
+		"optSLink" : "parametros/grupo",
+		"created_at" : "2023-10-16 14:53:33",
+		"updated_at" : "2023-10-16 14:53:33"
+	},
+	{
+		"idOptSub" : 7,
+		"empId" : 1,
+		"idOpt" : 18,
+		"optSDes" : "Sub Grupo",
+		"optSLink" : "parametros/sub_grupo",
+		"created_at" : "2023-10-16 14:53:33",
+		"updated_at" : "2023-10-16 14:53:33"
+	},
+	{
+		"idOptSub" : 8,
+		"empId" : 1,
+		"idOpt" : 18,
+		"optSDes" : "Productos",
+		"optSLink" : "parametros/productos",
+		"created_at" : "2023-10-16 14:53:33",
+		"updated_at" : "2023-10-16 14:53:33"
+	},
+	{
+		"idOptSub" : 9,
+		"empId" : 1,
+		"idOpt" : 18,
+		"optSDes" : "Unidad Medida",
+		"optSLink" : "parametros/unidad",
+		"created_at" : "2023-10-16 14:53:33",
+		"updated_at" : "2023-10-16 14:53:33"
+	},
+	{
+		"idOptSub" : 10,
+		"empId" : 1,
+		"idOpt" : 18,
+		"optSDes" : "Equivalencia",
+		"optSLink" : "parametros/equivalencia",
+		"created_at" : "2023-10-16 14:53:33",
+		"updated_at" : "2023-10-16 14:53:33"
+	}
+]
