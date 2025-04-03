@@ -45,7 +45,7 @@ class DatabaseSeeder extends Seeder
        
         
         Empresa::create([
-           
+            'empId'   => 1,
             'empDes'  =>'Agileticl EIRL',
             'empDir'  =>'Av Altamirano 1419',
             'empRut'  =>'76.350.147-7',
@@ -55,7 +55,7 @@ class DatabaseSeeder extends Seeder
           ]);
 
 
-        $faker = Faker::create();
+      
         
        
         Etapa::create([

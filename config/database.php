@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'sqlite'),
+    'default' => env('DB_CONNECTION', 'pgsql'),
 
     /*
     |--------------------------------------------------------------------------
@@ -84,17 +84,16 @@ return [
 
         'pgsql' => [
             'driver' => 'pgsql',
-            'url' => env('DB_URL'),
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '5432'),
-            'database' => env('DB_DATABASE', 'laravel'),
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD', ''),
-            'charset' => env('DB_CHARSET', 'utf8'),
+            'database' => env('DB_DATABASE', 'app_agileticl'),
+            'username' => env('DB_USERNAME', 'laravel'),
+            'password' => env('DB_PASSWORD', 'npg_quRi0zefcO6a'),
+            'charset' => 'utf8',
             'prefix' => '',
             'prefix_indexes' => true,
-            'search_path' => 'public',
-            'sslmode' => 'prefer',
+            'schema' => 'public',
+            'sslmode' => 'prefer'
         ],
 
         'sqlsrv' => [
@@ -110,6 +109,17 @@ return [
             'prefix_indexes' => true,
             // 'encrypt' => env('DB_ENCRYPT', 'yes'),
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
+        ],
+
+        'pgsql_odbc' => [
+            'driver'   => 'pgsql',
+            'url'      => 'postgres://laravel:npg_quRi0zefcO6a@ep-mute-cherry-a5bfhthw.aws-us-east-2.pg.laravel.cloud/app_agileticl?options=endpoint%3Dep-mute-cherry-a5bfhthw',
+            'odbc'     => true,
+            'dsn'      => env('DB_DSN', 'PostgreSQL301'),
+            'charset'  => 'utf8',
+            'prefix'   => '',
+            'schema'   => 'public',
+            'sslmode'  => 'require'
         ],
 
     ],
