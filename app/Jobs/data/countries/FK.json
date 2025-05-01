@@ -1,0 +1,51 @@
+{
+  "id": 71,
+  "name": "Falkland Islands",
+  "iso3": "FLK",
+  "iso2": "FK",
+  "numeric_code": "238",
+  "phone_code": "500",
+  "capital": "Stanley",
+  "currency": "FKP",
+  "currency_name": "Falkland Islands pound",
+  "currency_symbol": "£",
+  "tld": ".fk",
+  "native": "Falkland Islands",
+  "region": "Americas",
+  "region_id": 2,
+  "subregion": "South America",
+  "subregion_id": 8,
+  "nationality": "Falkland Island",
+  "timezones": [
+    {
+      "zoneName": "Atlantic/Stanley",
+      "gmtOffset": -10800,
+      "gmtOffsetName": "UTC-03:00",
+      "abbreviation": "FKST",
+      "tzName": "Falkland Islands Summer Time"
+    }
+  ],
+  "translations": {
+    "ko": "포클랜드 제도",
+    "pt-BR": "Ilhas Malvinas",
+    "pt": "Ilhas Falkland",
+    "nl": "Falklandeilanden [Islas Malvinas]",
+    "hr": "Falklandski Otoci",
+    "fa": "جزایر فالکلند",
+    "de": "Falklandinseln",
+    "es": "Islas Malvinas",
+    "fr": "Îles Malouines",
+    "ja": "フォークランド（マルビナス）諸島",
+    "it": "Isole Falkland o Isole Malvine",
+    "zh-CN": "福克兰群岛",
+    "tr": "Falkland Adalari",
+    "ru": "Фолклендские острова",
+    "uk": "Фолклендські острови",
+    "pl": "Falklandy"
+  },
+  "latitude": "-51.75000000",
+  "longitude": "-59.00000000",
+  "emoji": "🇫🇰",
+  "emojiU": "U+1F1EB U+1F1F0",
+  "states": []
+}

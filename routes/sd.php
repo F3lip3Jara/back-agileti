@@ -3,6 +3,7 @@
 use App\Http\Controllers\Sd\AlmacenController;
 use App\Http\Controllers\Sd\CentroController;
 use App\Http\Controllers\Sd\ClassTipController;
+use App\Http\Controllers\Sd\PdfOrdenController;
 use App\Http\Controllers\Sd\SdOrdController;
 use App\Http\Controllers\Sd\SectorController;
 use App\Http\Controllers\Sd\StockController;
@@ -27,7 +28,10 @@ use Illuminate\Support\Facades\Route;
  Route::post('insSdOrden'       , [SdOrdController::class,'ins']);
  Route::get('verSdOrden'        , [SdOrdController::class,'ver']);
  Route::get('pdfOrden'          , [SdOrdController::class, 'pdfOrden']);
-
+ Route::post('pdfOrdenes'       , [PdfOrdenController::class, 'generar']);
+ Route::get('pdfOrdenStatus'    , [PdfOrdenController::class, 'status']);
+ Route::post('liberarOrdenes'   , [SdOrdController::class, 'liberarOrdenes']);
+ Route::post('cerrarRecepcion'  , [SdOrdController::class, 'cerrarRecepcion']);
  Route::post('insOrdTrasInt'    , [SdOrdController::class,'insOrdTrasInt']);
  Route::get('trabSdClass'       , [ClassTipController::class,'index']);
  Route::post('insSdClass'       , [ClassTipController::class,'ins']);
@@ -35,7 +39,6 @@ use Illuminate\Support\Facades\Route;
 
  //Sector
  Route::get('trabSector'        , [SectorController::class,'index']);
- Route::get('sectorFil'         , [SectorController::class,'indexFil']);
  Route::post('insSector'        , [SectorController::class,'ins']);
  Route::post('delSector'        , [SectorController::class,'del']);
  Route::post('updSector'        , [SectorController::class,'update']);

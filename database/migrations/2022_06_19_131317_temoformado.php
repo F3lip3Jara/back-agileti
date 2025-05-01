@@ -13,7 +13,7 @@ class Temoformado extends Migration
      */
     public function up()
     {
-        Schema::create('prod_termoformado', function (Blueprint $table) {
+      /*  Schema::create('prod_termoformado', function (Blueprint $table) {
             $table->bigIncrements('terId');
             $table->bigInteger('empId')->unsigned();
             $table->foreign('empId')->references('empId')->on('parm_empresa');
@@ -102,7 +102,7 @@ class Temoformado extends Migration
             $table->foreign('terdId')->references('terdId')->on('prod_termoformado_det');                 
             $table->integer('terpaCor');        
             $table->timestamps();
-        });
+        });*/
     }
 
     /**

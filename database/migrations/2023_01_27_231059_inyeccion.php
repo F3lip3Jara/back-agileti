@@ -13,7 +13,7 @@ class Inyeccion extends Migration
      */
     public function up()
     {
-        Schema::create('prod_inyeccion', function (Blueprint $table) {
+       /* Schema::create('prod_inyeccion', function (Blueprint $table) {
             $table->bigIncrements('inyId');
             $table->bigInteger('empId')->unsigned();
             $table->foreign('empId')->references('empId')->on('parm_empresa');
@@ -108,7 +108,7 @@ class Inyeccion extends Migration
             $table->foreign('inydId')->references('inydId')->on('prod_inyeccion_det');                 
             $table->integer('inypaCor');        
             $table->timestamps();
-        });
+        });*/
 
 
         

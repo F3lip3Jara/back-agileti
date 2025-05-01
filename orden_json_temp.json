@@ -1,0 +1,70 @@
+{
+    "orden": {
+      "ordenInfo": {
+        "numeroOT": "OCNAC1115",
+        "cliente": "2025-04-11",
+        "fecha": "DIMENSION S.A.",
+        "almacenDestino": "PRIMERA",
+        "estado": "en_proceso",
+        "ordId": 11
+      },
+      "productos": [
+        {
+          "sku": "tshirtblacks",
+          "descripcion": "T-Shirt Black",
+          "cantidadEsperada": 2,
+          "cantidadRecibida": 2,
+          "unidadMedida": "UN",
+          "estado": "completo",
+          "lpns": [
+            {
+              "lpnCodigo": "LPN 1745879234268",
+              "tipo": "nuevo",
+              "cantidad": 2,
+              "estado": "bueno",
+              "esLPNOriginal": false,
+              "skusContenidos": [
+                "tshirtblacks"
+              ],
+              "metodoIngreso": "digitacion",
+              "cantidadesPorSKU": {
+                "tshirtblacks": 2
+              }
+            }
+          ]
+        },
+        {
+          "sku": "tshirtname6m",
+          "descripcion": "T-Shirt Name 6",
+          "cantidadEsperada": 3,
+          "cantidadRecibida": 3,
+          "unidadMedida": "UN",
+          "estado": "completo",
+          "lpns": [
+            {
+              "lpnCodigo": "LPN 1745879240355",
+              "tipo": "nuevo",
+              "cantidad": 3,
+              "estado": "bueno",
+              "esLPNOriginal": false,
+              "skusContenidos": [
+                "tshirtname6m"
+              ],
+              "metodoIngreso": "digitacion",
+              "cantidadesPorSKU": {
+                "tshirtname6m": 3
+              }
+            }
+          ]
+        }
+      ],
+      "recepcion": {
+        "totalSKUs": 2,
+        "skusRecibidos": 0,
+        "sector": "SECTOR-A",
+        "modoRecepcion": "reutilizacion",
+        "usuarioRecepcion": "USUARIO1",
+        "fechaRecepcion": "2025-04-28T22:27:09.201Z"
+      }
+    }
+  }

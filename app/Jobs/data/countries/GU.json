@@ -1,0 +1,223 @@
+{
+  "id": 89,
+  "name": "Guam",
+  "iso3": "GUM",
+  "iso2": "GU",
+  "numeric_code": "316",
+  "phone_code": "1",
+  "capital": "Hagatna",
+  "currency": "USD",
+  "currency_name": "US Dollar",
+  "currency_symbol": "$",
+  "tld": ".gu",
+  "native": "Guam",
+  "region": "Oceania",
+  "region_id": 5,
+  "subregion": "Micronesia",
+  "subregion_id": 21,
+  "nationality": "Guamanian, Guambat",
+  "timezones": [
+    {
+      "zoneName": "Pacific/Guam",
+      "gmtOffset": 36000,
+      "gmtOffsetName": "UTC+10:00",
+      "abbreviation": "CHST",
+      "tzName": "Chamorro Standard Time"
+    }
+  ],
+  "translations": {
+    "ko": "괌",
+    "pt-BR": "Guam",
+    "pt": "Guame",
+    "nl": "Guam",
+    "hr": "Guam",
+    "fa": "گوام",
+    "de": "Guam",
+    "es": "Guam",
+    "fr": "Guam",
+    "ja": "グアム",
+    "it": "Guam",
+    "zh-CN": "关岛",
+    "tr": "Guam",
+    "ru": "Гуам",
+    "uk": "Гуам",
+    "pl": "Guam"
+  },
+  "latitude": "13.46666666",
+  "longitude": "144.78333333",
+  "emoji": "🇬🇺",
+  "emojiU": "U+1F1EC U+1F1FA",
+  "states": [
+    {
+      "id": 5254,
+      "name": "Agana Heights",
+      "state_code": null,
+      "latitude": "13.46575920",
+      "longitude": "144.73195330",
+      "type": "Village",
+      "cities": []
+    },
+    {
+      "id": 5255,
+      "name": "Asan-Maina",
+      "state_code": null,
+      "latitude": "13.47291240",
+      "longitude": "144.71180410",
+      "type": "Village",
+      "cities": []
+    },
+    {
+      "id": 5256,
+      "name": "Barrigada",
+      "state_code": null,
+      "latitude": "13.46418270",
+      "longitude": "144.78822470",
+      "type": "Village",
+      "cities": []
+    },
+    {
+      "id": 5257,
+      "name": "Chalan Pago-Ordot",
+      "state_code": null,
+      "latitude": "13.43699800",
+      "longitude": "144.74867080",
+      "type": "Village",
+      "cities": []
+    },
+    {
+      "id": 5258,
+      "name": "Dededo",
+      "state_code": null,
+      "latitude": "13.52289900",
+      "longitude": "144.79892870",
+      "type": "Village",
+      "cities": []
+    },
+    {
+      "id": 5259,
+      "name": "Hågat",
+      "state_code": null,
+      "latitude": "13.38522240",
+      "longitude": "144.63996980",
+      "type": "Village",
+      "cities": []
+    },
+    {
+      "id": 5265,
+      "name": "Hagåtña",
+      "state_code": null,
+      "latitude": "13.47298290",
+      "longitude": "144.72740380",
+      "type": "Village",
+      "cities": []
+    },
+    {
+      "id": 5261,
+      "name": "Inarajan (Inalåhan)",
+      "state_code": null,
+      "latitude": "13.27620490",
+      "longitude": "144.72038630",
+      "type": "Village",
+      "cities": []
+    },
+    {
+      "id": 5263,
+      "name": "Mangilao",
+      "state_code": null,
+      "latitude": "13.44985090",
+      "longitude": "144.78302680",
+      "type": "Village",
+      "cities": []
+    },
+    {
+      "id": 5262,
+      "name": "Merizo (Malesso)",
+      "state_code": null,
+      "latitude": "13.26860850",
+      "longitude": "144.65797490",
+      "type": "Village",
+      "cities": []
+    },
+    {
+      "id": 5264,
+      "name": "Mongmong-Toto-Maite",
+      "state_code": null,
+      "latitude": "13.46922010",
+      "longitude": "144.75338080",
+      "type": "Village",
+      "cities": []
+    },
+    {
+      "id": 5266,
+      "name": "Piti",
+      "state_code": null,
+      "latitude": "13.46474460",
+      "longitude": "144.68769820",
+      "type": "Village",
+      "cities": []
+    },
+    {
+      "id": 5267,
+      "name": "Santa Rita (Sånta Rita-Sumai)",
+      "state_code": null,
+      "latitude": "13.38678740",
+      "longitude": "144.66642270",
+      "type": "Village",
+      "cities": []
+    },
+    {
+      "id": 5268,
+      "name": "Sinajana",
+      "state_code": null,
+      "latitude": "13.46094860",
+      "longitude": "144.74612080",
+      "type": "Village",
+      "cities": []
+    },
+    {
+      "id": 5269,
+      "name": "Talofofo (Talo'fo'fo)",
+      "state_code": null,
+      "latitude": "13.35471440",
+      "longitude": "144.73459730",
+      "type": "Village",
+      "cities": []
+    },
+    {
+      "id": 5270,
+      "name": "Tamuning",
+      "state_code": null,
+      "latitude": "13.49447620",
+      "longitude": "144.78045820",
+      "type": "Village",
+      "cities": []
+    },
+    {
+      "id": 5260,
+      "name": "Umatac (Humåtak)",
+      "state_code": null,
+      "latitude": "13.29457770",
+      "longitude": "144.65382830",
+      "type": "Village",
+      "cities": []
+    },
+    {
+      "id": 5271,
+      "name": "Yigo",
+      "state_code": null,
+      "latitude": "13.57293770",
+      "longitude": "144.82315220",
+      "type": "Village",
+      "cities": []
+    },
+    {
+      "id": 5272,
+      "name": "Yona",
+      "state_code": null,
+      "latitude": "13.41020600",
+      "longitude": "144.75557470",
+      "type": "Village",
+      "cities": []
+    }
+  ]
+}

@@ -13,7 +13,7 @@ class BinCorrelativo extends Migration
      */
     public function up()
     {
-        Schema::create('parm_bins_col', function (Blueprint $table) {
+      /*  Schema::create('parm_bins_col', function (Blueprint $table) {
             $table->bigIncrements('colbId');
             $table->bigInteger('empId')->unsigned();
             $table->foreign('empId')->references('empId')->on('parm_empresa');
@@ -35,7 +35,7 @@ class BinCorrelativo extends Migration
             $table->bigInteger('colbnum_h')->unsigned();
             $table->char('colbtip_h')->nullable();
             $table->timestamps();
-        });
+        });*/
     }
 
     /**

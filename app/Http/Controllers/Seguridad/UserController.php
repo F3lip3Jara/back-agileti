@@ -329,7 +329,7 @@ class UserController extends Controller
        
         $rolId       = $usuario['rol'];
         $gerId       = $usuario['gerId'];
-
+     
             $affect =User::create([
                     'email'    => '',
                     'password' => bcrypt($password),

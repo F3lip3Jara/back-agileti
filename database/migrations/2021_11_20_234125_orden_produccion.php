@@ -19,8 +19,8 @@ class OrdenProduccion extends Migration
             $table->foreign('empId')->references('empId')->on('parm_empresa');
             $table->bigInteger('prvId')->unsigned();
             $table->foreign('prvId')->references('prvId')->on('parm_proveedor');          
-            $table->string('orpNumOc');
-            $table->string('orpNumRea');
+            $table->string('orpNumOc')->nullable();
+            $table->string('orpNumRea')->nullable();
             $table->string('orpFech')->nullable();
             $table->string('orpUsrG');
             $table->string('orpObs')->nullable();

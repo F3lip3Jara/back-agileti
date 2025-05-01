@@ -181,6 +181,11 @@ return Application::configure(basePath: dirname(__DIR__))
             '/cambiarPassword',
             '/cargaMasivaReg',
             '/updOrdProduccion',
+            '/pdfOrdenes',
+            '/pdfOrdenStatus',
+            '/liberarOrdenes',
+            '/estadoOrden',
+            '/cerrarRecepcion',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -13,7 +13,7 @@ class Mezcla extends Migration
      */
     public function up()
     {
-        Schema::create('produ_mezcla', function (Blueprint $table) {
+        /*Schema::create('produ_mezcla', function (Blueprint $table) {
             $table->bigIncrements('mezId');
             $table->bigInteger('empId')->unsigned();
             $table->foreign('empId')->references('empId')->on('parm_empresa');
@@ -48,7 +48,7 @@ class Mezcla extends Migration
             $table->string('mezdManual')->nullable();
             $table->decimal('mezdKil' , 10 , 2);
             $table->timestamps();
-        });
+        });*/
     }
 
     /**

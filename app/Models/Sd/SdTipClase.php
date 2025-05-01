@@ -17,7 +17,8 @@ class SdTipClase extends Model
       'clasTipId',        
       'empId',
       'clasTipDes',
-      'clasTip'
+      'clasTip',
+      'clasTipCod'
     ];
 
     public function getCreatedAtAttribute($value){

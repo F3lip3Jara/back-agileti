@@ -13,7 +13,7 @@ class CalendaJul extends Migration
      */
     public function up()
     {
-        Schema::create('parm_calendario_jul', function (Blueprint $table) {
+      /*  Schema::create('parm_calendario_jul', function (Blueprint $table) {
             $table->bigIncrements('calId');
             $table->bigInteger('empId')->unsigned();
             $table->foreign('empId')->references('empId')->on('parm_empresa');
@@ -23,7 +23,7 @@ class CalendaJul extends Migration
             $table->string('calDia');
             $table->string('calValor')->nullable();
             $table->timestamps();
-        });
+        });*/
     }
 
     /**

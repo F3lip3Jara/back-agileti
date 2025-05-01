@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Oms\WebhookController;
 use App\Http\Controllers\Parametros\ComunaController;
 use App\Http\Controllers\Seguridad\UserController;
 use Illuminate\Support\Facades\Route;
@@ -42,4 +43,4 @@ require __DIR__ . '/weebhooksOms.php';
 
 Route::get('comuna'       , [ComunaController::class,'index']);
 
-
+Route::post('estadoOrden'       , [WebhookController::class,'estadoOrden']);

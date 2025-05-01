@@ -13,7 +13,7 @@ class Extursion extends Migration
      */
     public function up()
     {
-        Schema::create('prod_extrusion', function (Blueprint $table) {
+       /* Schema::create('prod_extrusion', function (Blueprint $table) {
             $table->bigIncrements('extId');
             $table->bigInteger('empId')->unsigned();
             $table->foreign('empId')->references('empId')->on('parm_empresa');
@@ -55,7 +55,7 @@ class Extursion extends Migration
             $table->string('extdTip');
             $table->longText('extdObs')->nullable();
             $table->timestamps();
-        });
+        });*/
     }
 
     /**

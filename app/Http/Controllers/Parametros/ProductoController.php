@@ -41,11 +41,11 @@ class ProductoController extends Controller
 
     public function update(Request $request)
     {
-        $name        = $request['name'];
-        $empId       = $request['empId'];   
-        $data        = $request->all();
+        $name           = $request['name'];
+        $empId          = $request['empId'];   
+        $data           = $request->all();
         $codigo_externo = $data['id_ext'];
-        $url = $data['url'];
+        $url            = $data['url'];
         if($codigo_externo == null){
             $codigo_externo = 0;
         }

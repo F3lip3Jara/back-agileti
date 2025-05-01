@@ -56,8 +56,8 @@ class StockMov implements ShouldQueue
                     $prdId          = Producto::where('prdCod', $prdCod)->get();
                     $prdId          = $prdId[0]['prdId'];                       
                     $enteredQty     = $item->enteredQty;
-                    $sectorId       = $item->sectorFil->sectorId;
-                    $sectorCod      = $item->sectorFil->secCod;
+                    $sectorId       = $item->sectorFil->sectorId ?? '';
+                    $sectorCod      = $item->sectorFil->secCod ?? '';
                     $almId          = $item->almId;
                     $centroId       = $item->centroId;
                     $ordId          = $item->ordId;
@@ -69,7 +69,7 @@ class StockMov implements ShouldQueue
                         'empId'                  => $this->empId,
                         'prdId'                  => $prdId,
                         'iblpnQty'               => $enteredQty,             
-                        'iblpnStatus'            => 'T', //P: Pendiente, A: Almacenado, R: Reservado, T: En tránsito
+                        'iblpnStatus'            => 'P', //P: Pendiente, A: Almacenado, R: Reservado, T: En tránsito
                         'iblpnType'              => 'I', //I: Ingreso, E: Egreso
                         'iblpnHdrCustShortText1' => $ordId, //Orden de SD
                         'iblpnHdrCustShortText2' => $orddId, //Id de la Orden de SD
@@ -105,7 +105,7 @@ class StockMov implements ShouldQueue
                             'almId'      => $item->almId,
                             'prdId'      => $prdId,
                             'stockQty'   => $enteredQty,
-                            'stockEst'   => 'T', //Transito
+                            'stockEst'   => 'P', //Pendiente
                         ]);
                     }
 
@@ -162,9 +162,6 @@ class StockMov implements ShouldQueue
     
                 }
     
-                SdTIblns::where('stockTblpnId', $stockTblpnId)->update(['stockTstatus' => 'S']);
-                SdOrden::where( 'ordId' , $ordId)->update(['ordestatus' => 'V']);
-
 
                 
             }

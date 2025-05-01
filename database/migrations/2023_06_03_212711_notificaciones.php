@@ -13,7 +13,7 @@ class Notificaciones extends Migration
      */
     public function up()
     {
-        Schema::create('sys_notificaciones', function (Blueprint $table) {
+       /* Schema::create('sys_notificaciones', function (Blueprint $table) {
             $table->bigIncrements('notId');
             $table->bigInteger('empId')->unsigned();
             $table->foreign('empId')->references('empId')->on('parm_empresa');           
@@ -32,7 +32,7 @@ class Notificaciones extends Migration
             $table->foreign('empId')->references('empId')->on('parm_empresa');           
             $table->string('notvUso');  
             $table->timestamps();
-        });
+        });*/
     }
 
     /**

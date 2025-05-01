@@ -77,7 +77,7 @@ class OrdenProdController extends Controller
             'orpHdrCustShortText1' => str_replace(',', '.', $centroId), // 255, //
             'orpHdrCustShortText2' => str_replace(',', '.', $almId),// 100, // Clase documento descripcion
             'orpHdrCustShortText3' => $clasTipId['clasTipId'],// 100, // 
-            'orpHdrCustShortText4' => $clasTipId['clasTipDes'], //100, // Fecha promesa entrega
+            'orpHdrCustShortText4' => $clasTipId['clasTipCod'], //100, // Fecha promesa entrega
             'orpHdrCustShortText5' => $latitudEnvio, // 100, //  Latitud
             'orpHdrCustShortText6' => $longitudEnvio, // 100, //  Longitud
             'orpHdrCustShortText7' => str_replace(',', '.', $data['total']), //100, //  Total
@@ -139,6 +139,8 @@ class OrdenProdController extends Controller
         $longitudEnvio  = $data['longitudEnvio'];
         $notas          = $data['notas'];
 
+
+        
      
 
         $affected       = OrdenProduccion::create([
@@ -156,7 +158,7 @@ class OrdenProdController extends Controller
             'orpHdrCustShortText1' => str_replace(',', '.', $centroId), // 255, //
             'orpHdrCustShortText2' => str_replace(',', '.', $almId),// 100, // Clase documento descripcion
             'orpHdrCustShortText3' => $clasTipId['clasTipId'],// 100, // 
-            'orpHdrCustShortText4' => $clasTipId['clasTipDes'], //100, // Fecha promesa entrega
+            'orpHdrCustShortText4' => $clasTipId['clasTipCod'], //100, // Fecha promesa entrega
             'orpHdrCustShortText5' => $latitudEnvio, // 100, //  Latitud
             'orpHdrCustShortText6' => $longitudEnvio, // 100, //  Longitud
             'orpHdrCustShortText7' => str_replace(',', '.', $data['total']), //100, //  Total

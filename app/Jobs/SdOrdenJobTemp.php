@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Produccion\OrdenProduccion;
 use App\Models\Sd\SdOrden;
 use App\Models\Sd\SdOrdenDet;
 use App\Models\Sd\SdOrdeTemp;
@@ -42,34 +43,34 @@ class SdOrdenJobTemp implements ShouldQueue
 
         foreach($data as $item){
             $orden = json_decode($item->ordtCustShortText1);
-            $det    = $orden->detalles;
+            $det    = $orden->detalle;
             $ordtId = $item->ordtId;
-            $ordNumber = $orden->tipo_des.'-'.substr($orden->tipo_des, 0, 1).$orden->orden_compra.$orden->orden_produccion;
+            $ordNumber = $orden->tipo_cod.$orden->centro_id.$orden->almacen_id.$ordtId;
 
             $affected = SdOrden::create([
             'empId'                => $orden->empId,
             'centroId'             => $orden->centro_id,
             'almId'                => $orden->almacen_id,
             'ordNumber'            => $ordNumber,// Número de onda
-            'ordQty'               => $orden->prd_total,// Cantidad de orden
-            'ordestatus'           => 'L', // Estado de la orden 
+            'ordQty'               => $orden->prd_total_lineas,// Cantidad de orden
+            'ordestatus'           => 'P', // Estado de la orden  pediente
             'ordTip'               => $orden->tipo_id, // Tipo Salida / Entrada
-            'ordTipDes'            => $orden->tipo_des,//Tipo Salida / Entrada
-            'ordClase'             =>'' ,//Clase 
-            'ordClaseDes'          => '',//Clase 
-            'ordHdrCustShortText1' => '',//Direccion
-            'ordHdrCustShortText2' => '',//Ciudad
-            'ordHdrCustShortText3' => '',//Región
-            'ordHdrCustShortText4' => $orden->id,//Identificación de orden migrado
-            'ordHdrCustShortText5' => $orden->fecha,//Fecha de la orden
-            'ordHdrCustShortText6' => '',//Teléfono
-            'ordHdrCustShortText7' => $orden->proveedor,//Nombre
+            'ordTipDes'            => $orden->tipo_cod,//Tipo Salida / Entrada
+            'ordClase'             =>$orden->tipo_cod,//Clase 
+            'ordClaseDes'          => $orden->tipo_des,//Clase 
+            'ordHdrCustShortText1' => str_replace(',', '.', $orden->id),//Documeno relacionado
+            'ordHdrCustShortText2' => $orden->proveedor_id,//Proveedor  / Cliente
+            'ordHdrCustShortText3' => $orden->proveedor,//Nombre Proveedor / Cliente
+            'ordHdrCustShortText4' => $orden->fecha,//Fecha de la orden
+            'ordHdrCustShortText5' => $orden->fech_promesa,//Fecha promesa entrega
+            'ordHdrCustShortText6' => $orden->prd_total,//Cantidad de lineas
+            'ordHdrCustShortText7' => '',//Nombre
             'ordHdrCustShortText8' => '',//Email
             'ordHdrCustShortText9' => '',//Courier
             'ordHdrCustShortText10'=> '',//Latitud de la orden
             'ordHdrCustShortText11'=>'',// Lomgitud de la orden
             'ordHdrCustShortText12'=>'',//Clase de documento
-            'ordHdrCustShortText13'=>$orden->rut,//Rut
+            'ordHdrCustShortText13'=>'',//Libre
             'ordHdrCustLongText1'  =>''//Comentarios
             ]);
 
@@ -84,7 +85,7 @@ class SdOrdenJobTemp implements ShouldQueue
                 'orddQtyAsig'           =>0,
                 'ordDtlCustShortText1'  =>$detalle->orpdPrdCod, 
                 'ordDtlCustShortText2'  =>$detalle->orpdPrdDes,
-                'ordDtlCustShortText3'  =>'',
+                'ordDtlCustShortText3'  =>$orden->almacen_destino,
                 'ordDtlCustShortText4'  =>'',
                 'ordDtlrCustShortText5' =>'',
                 'ordDtlCustShortText6'  =>'',
@@ -96,7 +97,7 @@ class SdOrdenJobTemp implements ShouldQueue
             }
 
             SdOrdeTemp::where('ordtId', $ordtId)->update(['ordtest' => 'S']);
-          
+            OrdenProduccion::where('orpId', $orden->id) ->update(['orpEst' => 2]);
         }
     }
 }

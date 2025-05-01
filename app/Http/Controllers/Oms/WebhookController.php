@@ -206,6 +206,16 @@ class WebhookController extends Controller
     }
 
 
+    public function estadoOrden(Request $request){
+        /*$header = $request->header();
+        $data = $request->all();
+        $apiKey = $request->header('api-key') ?? $request->header('auth-key');
+        $trazMid = $data['trazMid'] ?? '';
+       */
+        //return $data;'//'
+    }
+
+
 
     
 }

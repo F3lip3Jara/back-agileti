@@ -1,0 +1,51 @@
+{
+  "id": 175,
+  "name": "Pitcairn Island",
+  "iso3": "PCN",
+  "iso2": "PN",
+  "numeric_code": "612",
+  "phone_code": "870",
+  "capital": "Adamstown",
+  "currency": "NZD",
+  "currency_name": "New Zealand dollar",
+  "currency_symbol": "$",
+  "tld": ".pn",
+  "native": "Pitcairn Islands",
+  "region": "Oceania",
+  "region_id": 5,
+  "subregion": "Polynesia",
+  "subregion_id": 22,
+  "nationality": "Pitcairn Island",
+  "timezones": [
+    {
+      "zoneName": "Pacific/Pitcairn",
+      "gmtOffset": -28800,
+      "gmtOffsetName": "UTC-08:00",
+      "abbreviation": "PST",
+      "tzName": "Pacific Standard Time (North America"
+    }
+  ],
+  "translations": {
+    "ko": "핏케언 제도",
+    "pt-BR": "Ilhas Pitcairn",
+    "pt": "Ilhas Picárnia",
+    "nl": "Pitcairneilanden",
+    "hr": "Pitcairnovo otočje",
+    "fa": "پیتکرن",
+    "de": "Pitcairn",
+    "es": "Islas Pitcairn",
+    "fr": "Îles Pitcairn",
+    "ja": "ピトケアン",
+    "it": "Isole Pitcairn",
+    "zh-CN": "皮特凯恩群岛",
+    "tr": "Pitcairn Adalari",
+    "ru": "Остров Питкэрн",
+    "uk": "Острів Піткерн",
+    "pl": "Wyspa Pitcairn"
+  },
+  "latitude": "-25.06666666",
+  "longitude": "-130.10000000",
+  "emoji": "🇵🇳",
+  "emojiU": "U+1F1F5 U+1F1F3",
+  "states": []
+}

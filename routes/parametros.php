@@ -47,6 +47,7 @@ use Illuminate\Support\Facades\Route;
     Route::get('valCodReg'         , [RegionController::class,'valCodReg']);
     Route::get('regPai'            , [RegionController::class,'indexFil']);
     Route::post('cargaMasivaReg'   , [RegionController::class,'cargaMasiva']);
+    Route::get('estadoCarga'       , [RegionController::class,'estadoCarga']);
     //Ciudad
     Route::get('trabCiudad'     , [CiudadController::class,'index']);
     Route::post('insCiudad'     , [CiudadController::class,'ins']);

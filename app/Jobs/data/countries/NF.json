@@ -1,0 +1,51 @@
+{
+  "id": 163,
+  "name": "Norfolk Island",
+  "iso3": "NFK",
+  "iso2": "NF",
+  "numeric_code": "574",
+  "phone_code": "672",
+  "capital": "Kingston",
+  "currency": "AUD",
+  "currency_name": "Australian dollar",
+  "currency_symbol": "$",
+  "tld": ".nf",
+  "native": "Norfolk Island",
+  "region": "Oceania",
+  "region_id": 5,
+  "subregion": "Australia and New Zealand",
+  "subregion_id": 19,
+  "nationality": "Norfolk Island",
+  "timezones": [
+    {
+      "zoneName": "Pacific/Norfolk",
+      "gmtOffset": 43200,
+      "gmtOffsetName": "UTC+12:00",
+      "abbreviation": "NFT",
+      "tzName": "Norfolk Time"
+    }
+  ],
+  "translations": {
+    "ko": "노퍽 섬",
+    "pt-BR": "Ilha Norfolk",
+    "pt": "Ilha Norfolk",
+    "nl": "Norfolkeiland",
+    "hr": "Otok Norfolk",
+    "fa": "جزیره نورفک",
+    "de": "Norfolkinsel",
+    "es": "Isla de Norfolk",
+    "fr": "Île de Norfolk",
+    "ja": "ノーフォーク島",
+    "it": "Isola Norfolk",
+    "zh-CN": "诺福克岛",
+    "tr": "Norfolk Adasi",
+    "ru": "Остров Норфолк",
+    "uk": "Острів Норфолк",
+    "pl": "Wyspa Norfolk"
+  },
+  "latitude": "-29.03333333",
+  "longitude": "167.95000000",
+  "emoji": "🇳🇫",
+  "emojiU": "U+1F1F3 U+1F1EB",
+  "states": []
+}

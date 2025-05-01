@@ -13,7 +13,7 @@ class MotivoRechazo extends Migration
      */
     public function up()
     {
-        Schema::create('parm_mot_rechazo', function (Blueprint $table) {
+       /* Schema::create('parm_mot_rechazo', function (Blueprint $table) {
             $table->bigIncrements('motId');
             $table->bigInteger('empId')->unsigned();
             $table->foreign('empId')->references('empId')->on('parm_empresa');
@@ -22,7 +22,7 @@ class MotivoRechazo extends Migration
             $table->string('motDes');
             $table->timestamps();
             
-        });
+        });*/
     }
 
     /**

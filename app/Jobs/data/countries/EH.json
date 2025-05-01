@@ -1,0 +1,51 @@
+{
+  "id": 244,
+  "name": "Western Sahara",
+  "iso3": "ESH",
+  "iso2": "EH",
+  "numeric_code": "732",
+  "phone_code": "212",
+  "capital": "El-Aaiun",
+  "currency": "MAD",
+  "currency_name": "Moroccan Dirham",
+  "currency_symbol": "MAD",
+  "tld": ".eh",
+  "native": "الصحراء الغربية",
+  "region": "Africa",
+  "region_id": 1,
+  "subregion": "Northern Africa",
+  "subregion_id": 1,
+  "nationality": "Sahrawi, Sahrawian, Sahraouian",
+  "timezones": [
+    {
+      "zoneName": "Africa/El_Aaiun",
+      "gmtOffset": 3600,
+      "gmtOffsetName": "UTC+01:00",
+      "abbreviation": "WEST",
+      "tzName": "Western European Summer Time"
+    }
+  ],
+  "translations": {
+    "ko": "서사하라",
+    "pt-BR": "Saara Ocidental",
+    "pt": "Saara Ocidental",
+    "nl": "Westelijke Sahara",
+    "hr": "Zapadna Sahara",
+    "fa": "جمهوری دموکراتیک عربی صحرا",
+    "de": "Westsahara",
+    "es": "Sahara Occidental",
+    "fr": "Sahara Occidental",
+    "ja": "西サハラ",
+    "it": "Sahara Occidentale",
+    "zh-CN": "西撒哈拉",
+    "tr": "Bati Sahra",
+    "ru": "Западная Сахара",
+    "uk": "Західна Сахара",
+    "pl": "Sahara Zachodnia"
+  },
+  "latitude": "24.50000000",
+  "longitude": "-13.00000000",
+  "emoji": "🇪🇭",
+  "emojiU": "U+1F1EA U+1F1ED",
+  "states": []
+}

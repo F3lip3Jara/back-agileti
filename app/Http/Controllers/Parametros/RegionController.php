@@ -15,6 +15,7 @@ use App\Models\viewRegiones;
 use Error;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
+use App\Models\Parametros\RegionCargaControl;
 
 class RegionController extends Controller
 {
@@ -182,29 +183,76 @@ class RegionController extends Controller
         }
     }
 
-    public function cargaMasiva(Request $request){
+    public function cargaMasiva(Request $request)
+    {
+        try {
+            $data = $request->all();      
+            $paiId = $data['paiId'];
+            $code = Pais::select('paiCod')->where('paiId', $paiId)->get();      
+            $iso2 = $code['0']['paiCod'];      
+            $name = $request['name'];
+            $empId = $request['empId'];
 
-       try{
-            $data        = $request->all();      
-            $paiId       = $data['paiId'];
-            $code        = Pais::select('paiCod')->where('paiId',$paiId)->get();      
-            $iso2        = $code['0']['paiCod'];      
-            $name        = $request['name'];
-            $empId       = $request['empId'];
-            $job         = new CargadeRegiones( $paiId , $iso2);
-        
+             // Crear registro de control
+             $control = RegionCargaControl::create([
+                'empId' => 1,
+                'paiId' => $paiId,
+                'regCargaEst' => 'E' // En proceso
+            ]);
+         
+            
+            $job = new CargadeRegiones($paiId, $iso2, $control->regCargaId);
             dispatch($job);
 
-            $job = new LogSistema( $request->log['0']['optId'] , $request->log['0']['accId'] , $name , $empId , $request->log['0']['accDes'], $request->log['0']['accTip']);
-            dispatch($job);  
-                    
-            $resources = array(
-                array("error" => '0', 'mensaje' => $request->log['0']['accMessage'], 'type' => $request->log['0']['accType'])
+            $job = new LogSistema(
+                $request->log['0']['optId'],
+                $request->log['0']['accId'],
+                $name,
+                $empId,
+                $request->log['0']['accDes'],
+                $request->log['0']['accTip']
             );
+            dispatch($job);  
+             
+            $resources =  $control->regCargaId;          
             
-        return response()->json($resources, 200);       
-        }catch( Error $e){
+            return response()->json($resources, 200);       
+        } catch(Error $e) {
             return response()->json($e->getMessage(), 500);
+        }
+    }
+
+    public function estadoCarga(Request $request)
+    {
+        try {
+            
+            $regCargaId = $request->regCargaId;
+            $control = RegionCargaControl::where('regCargaId', $regCargaId)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            if (!$control) {
+                return response()->json([
+                    'error' => '1',
+                    'mensaje' => 'No se encontró registro de carga',
+                    'type' => 'warning'
+                ], 200);
+            }
+
+            return response()->json([
+                'error' => '0',
+                'estado' => $control->regCargaEst,
+                'total' => $control->regCargaTotal,
+                'progreso' => $control->regCargaProgreso,
+                'error' => $control->regCargaError
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => '1',
+                'mensaje' => $e->getMessage(),
+                'type' => 'danger'
+            ], 500);
         }
     }
 

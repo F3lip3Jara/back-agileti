@@ -11,7 +11,9 @@ use App\Models\Sd\SdOrdenDet;
 use App\Models\Sd\SdOrdeTemp;
 use App\Models\Sd\SdTIblns;
 use App\Models\Sd\SdTraslado;
+use App\Models\FieldDefinition;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
 class SdOrdController extends Controller
@@ -25,51 +27,63 @@ class SdOrdController extends Controller
         ->orderBy('sd_orden.created_at', 'desc')
         ->first();
 
-        $columns = $query ? array_keys($query->toArray()) : [];
-        $columns = array_filter($columns, function ($column) {
-            return $column !== 'empId'; // Columna a excluir
-        });
+        if ($query) {
+            $columns = array_keys($query->toArray());
+            
+            // Obtener definiciones de campos filtrables
+            $fieldDefinitions = FieldDefinition::whereIn('field_name', $columns)
+                ->where('is_filterable', 1)
+                ->get();
 
-        $columns = array_values($columns); // Reindexar el array si es necesa
+            // Crear array de definiciones formateado
+            $columnDefinitions = [];
+            foreach ($fieldDefinitions as $definition) {
+                $columnDefinitions[] = [
+                    'campo' => $definition->field_name,
+                    'label' => $definition->label,
+                    'data_type' => $definition->data_type
+                ];
+            }
+        } else {
+            $columnDefinitions = [];
+        }
+
         $filtros = $request['filter'];
         $filtros = json_decode(base64_decode($filtros));
-        
-       if(isset($filtros)){       
-            $data     = SdOrden::query()       
-                    ->filter($filtros)
-                    ->join('sd_centro', 'sd_centro.centroId', '=', 'sd_orden.centroId')   
-                    ->join('sd_centro_alm', 'sd_centro_alm.almId', '=', 'sd_orden.almId')   
-                    ->where('sd_orden.empId', $request->empId)    
-                    ->orderBy('sd_orden.created_at', 'desc')
+       
+        if(isset($filtros)){       
+            $data = SdOrden::query()   
+                    ->filter($filtros)                   
                     ->get();
-       }else{
-            $data    = SdOrden::select('*')
+        } else {
+            $data = SdOrden::select('*')
                     ->join('sd_centro', 'sd_centro.centroId', '=', 'sd_orden.centroId')   
                     ->join('sd_centro_alm', 'sd_centro_alm.almId', '=', 'sd_orden.almId')   
                     ->where('sd_orden.empId', $request->empId)    
                     ->orderBy('sd_orden.created_at', 'desc')
                     ->take(1500)->get();
-       }
+        }
        
         $resources = array(
-                "data"   => $data,
-                "colums" => $columns
+            "data" => $data,
+            "columns" => $columnDefinitions
         );
-	  return response()->json($resources, 200); 	
-	
+        return response()->json($resources, 200); 	
     }
 
     public function ins(Request $request){
-        return $request->all();
+    //    return $request->all();
         $name     = $request['name'];
         $empId    = $request['empId'];
-        $id       = $request['id'];
+        $id       = $request['pedido']['id'];
         $centroId = $request['pedido']['centro_id'];
         $almId    = $request['pedido']['almacen_id'];
-        $tipo     = $request['pedido']['tipo'];
-        
-        $data     = json_encode($request->all());
-        
+        $tipo     = $request['pedido']['tipo'];   
+
+        $data     = json_encode($request['pedido']);
+
+       
+    
         $valida = SdOrdeTemp::all()
                         ->where('empId', $empId)
                         ->where('centroId', $centroId)
@@ -120,9 +134,92 @@ class SdOrdController extends Controller
         return response()->json($data, 200);
     }
 
+    function liberarOrdenes(Request $request){
+        $ordenIds = $request['orden_ids'];
+        $name     = $request['name'];
+        $empId    = $request['empId'];
+        // Validar que orden_ids sea un array y no esté vacío
+        if (!is_array($ordenIds) || empty($ordenIds)) {
+            Log::error('Datos inválidos recibidos', [
+                'orden_ids' => $ordenIds,
+                'request_data' => $request->all()
+            ]);
+            return response()->json([
+                'error' => 'Los IDs de órdenes son inválidos o están vacíos'
+            ], 400);
+        }
+
+        // Validar que todos los IDs sean números
+        foreach ($ordenIds as $id) {
+            $affected = SdOrden::where('ordId', $id)->update(['ordestatus' => 'L']);
+        }
+        
+        if (isset($affected)) {
+            $job = new LogSistema( $request->log['0']['optId'] , $request->log['0']['accId'] , $name , $empId , $request->log['0']['accDes'], $request->log['0']['accTip']);
+             dispatch($job); 
+             $job = new SdOrdenJobTemp($empId);         
+             dispatch($job);             
+             $resources = array(
+             array("error" => '0', 'mensaje' => $request->log['0']['accMessage'], 'type' => $request->log['0']['accType'])
+             );
+             return response()->json($resources, 200);
+     } else {
+         return response()->json('error', 204);
+     }
+        
+    }
+
+    public function cerrarRecepcion(Request $request){
+        $orden    = $request['orden'];
+        $name     = $request['name'];
+        $empId    = $request['empId'];
+        $idUser   = $request['idUser'];
+        $centroId = $orden['centroId'];
+        $almId    = $orden['almId'];
+        
+       
+        //formato de la orden :  orden_json_temp.json
+        $affected = SdTIblns::all()
+        ->where('empId', $empId )
+        ->where('centroId', $centroId)
+        ->where('almId' , $almId)
+        ->where('stockTblpnJson' , $orden);
+
+        
+        if(sizeof($affected) > 0){
+            $resources = array(
+                array("error" => '0', 'mensaje' => 'Error la orden ya tiene traslado iniciado' , 'type' => 'info')
+            );
+            return response()->json($resources, 200);
+        }else{
+                $affected=SdTIblns::create([
+                    'empId'         => $empId,
+                    'centroId'      => $centroId,
+                    'almId'         => $almId,   
+                    'stockTblpnJson'=> $orden
+                ]);
+                           
+                if (isset($affected)) {
+                    $job = new LogSistema( $request->log['0']['optId'] , $request->log['0']['accId'] , $name , $empId , $request->log['0']['accDes'], $request->log['0']['accTip']);
+                    dispatch($job);
+                   // $job = new StockMov($empId, $idUser, $name, $centroId, $almId);
+                   // dispatch($job);         
+                    $resources = array(
+                        array("error" => '0', 'mensaje' => $request->log['0']['accMessage'], 'type' => $request->log['0']['accType'])
+                    );
+                    return response()->json($resources, 200);
+                } else {
+                    return response()->json('error', 204);
+                }
+        }
+
+
+        
+    }
+
     public function insOrdTrasInt(Request $request){
      
-        $data     = $request->all();
+      /*  $data     = $request->all();
         $empId    = $data['empId'];
         $name     = $data['name'];
         $idUser   = $data['idUser'];
@@ -147,9 +244,7 @@ class SdOrdController extends Controller
                     'almId'         => $almId,   
                     'stockTblpnJson'=> $prd
                 ]);
-
-        
-            
+                           
                 if (isset($affected)) {
                     $job = new LogSistema( $request->log['0']['optId'] , $request->log['0']['accId'] , $name , $empId , $request->log['0']['accDes'], $request->log['0']['accTip']);
                     dispatch($job);
@@ -162,7 +257,7 @@ class SdOrdController extends Controller
                 } else {
                     return response()->json('error', 204);
                 }
-        }
+        }*/
     }
 
     public function pdfOrden(Request $request){

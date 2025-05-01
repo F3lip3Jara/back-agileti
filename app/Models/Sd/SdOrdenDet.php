@@ -2,6 +2,7 @@
 
 namespace App\Models\Sd;
 
+use App\Models\Parametros\Producto;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -23,6 +24,7 @@ class SdOrdenDet extends Model
         'orddNumber',
         'orddQtySol',
         'orddQtyAsig',
+        'orddCantRecep',
         'ordDtlCustShortText1', 
         'ordDtlCustShortText2',
         'ordDtlCustShortText3',
@@ -35,16 +37,12 @@ class SdOrdenDet extends Model
         'ordDtlCustShortText10'
     ];
 
-  /*  public function cliente()
-    {
-        return $this->belongsTo(Cliente::class);
+    public function unidadMedida(){
+        $producto = Producto::select('unId' , 'prdId')->where('prdCod', $this->ordDtlCustShortText1)->first();
+
+
     }
-    
-    public function lineas()
-    {
-        return $this->hasMany(LineaOrden::class);
-    }
-*/
+
     public function getCreatedAtAttribute($value){
         return Carbon::createFromTimestamp(strtotime($value))
         ->timezone(Config::get('app.timezone'))

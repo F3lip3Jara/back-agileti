@@ -1,0 +1,178 @@
+{
+  "id": 8,
+  "name": "Anguilla",
+  "iso3": "AIA",
+  "iso2": "AI",
+  "numeric_code": "660",
+  "phone_code": "1",
+  "capital": "The Valley",
+  "currency": "XCD",
+  "currency_name": "East Caribbean dollar",
+  "currency_symbol": "$",
+  "tld": ".ai",
+  "native": "Anguilla",
+  "region": "Americas",
+  "region_id": 2,
+  "subregion": "Caribbean",
+  "subregion_id": 7,
+  "nationality": "Anguillan",
+  "timezones": [
+    {
+      "zoneName": "America/Anguilla",
+      "gmtOffset": -14400,
+      "gmtOffsetName": "UTC-04:00",
+      "abbreviation": "AST",
+      "tzName": "Atlantic Standard Time"
+    }
+  ],
+  "translations": {
+    "ko": "앵귈라",
+    "pt-BR": "Anguila",
+    "pt": "Anguila",
+    "nl": "Anguilla",
+    "hr": "Angvila",
+    "fa": "آنگویلا",
+    "de": "Anguilla",
+    "es": "Anguilla",
+    "fr": "Anguilla",
+    "ja": "アンギラ",
+    "it": "Anguilla",
+    "zh-CN": "安圭拉",
+    "tr": "Anguilla",
+    "ru": "Ангилья",
+    "uk": "Ангілья",
+    "pl": "Anguilla"
+  },
+  "latitude": "18.25000000",
+  "longitude": "-63.16666666",
+  "emoji": "🇦🇮",
+  "emojiU": "U+1F1E6 U+1F1EE",
+  "states": [
+    {
+      "id": 5273,
+      "name": "Blowing Point",
+      "state_code": null,
+      "latitude": "18.17655530",
+      "longitude": "-63.10212960",
+      "type": "District",
+      "cities": []
+    },
+    {
+      "id": 5274,
+      "name": "East End",
+      "state_code": null,
+      "latitude": "18.23561730",
+      "longitude": "-63.01497150",
+      "type": "District",
+      "cities": []
+    },
+    {
+      "id": 5275,
+      "name": "George Hill",
+      "state_code": null,
+      "latitude": "18.19978110",
+      "longitude": "-63.07761140",
+      "type": "District",
+      "cities": []
+    },
+    {
+      "id": 5276,
+      "name": "Island Harbour",
+      "state_code": null,
+      "latitude": "18.25521250",
+      "longitude": "-63.01405900",
+      "type": "District",
+      "cities": []
+    },
+    {
+      "id": 5277,
+      "name": "North Hill",
+      "state_code": null,
+      "latitude": "18.20508630",
+      "longitude": "-63.08584570",
+      "type": "District",
+      "cities": []
+    },
+    {
+      "id": 5278,
+      "name": "North Side",
+      "state_code": null,
+      "latitude": "18.23005440",
+      "longitude": "-63.05188900",
+      "type": "District",
+      "cities": []
+    },
+    {
+      "id": 5279,
+      "name": "Sandy Ground",
+      "state_code": null,
+      "latitude": "18.20185510",
+      "longitude": "-63.09734710",
+      "type": "District",
+      "cities": []
+    },
+    {
+      "id": 5280,
+      "name": "Sandy Hill",
+      "state_code": null,
+      "latitude": "18.21892100",
+      "longitude": "-63.01299160",
+      "type": "District",
+      "cities": []
+    },
+    {
+      "id": 5281,
+      "name": "South Hill",
+      "state_code": null,
+      "latitude": "18.18924750",
+      "longitude": "-63.09763670",
+      "type": "District",
+      "cities": []
+    },
+    {
+      "id": 5282,
+      "name": "Stoney Ground",
+      "state_code": null,
+      "latitude": "18.21791010",
+      "longitude": "-63.04969860",
+      "type": "District",
+      "cities": []
+    },
+    {
+      "id": 5283,
+      "name": "The Farrington",
+      "state_code": null,
+      "latitude": "18.21347010",
+      "longitude": "-63.02721620",
+      "type": "District",
+      "cities": []
+    },
+    {
+      "id": 5284,
+      "name": "The Quarter",
+      "state_code": null,
+      "latitude": "18.21453340",
+      "longitude": "-63.05644890",
+      "type": "District",
+      "cities": []
+    },
+    {
+      "id": 5285,
+      "name": "The Valley",
+      "state_code": null,
+      "latitude": "18.21521660",
+      "longitude": "-63.07006280",
+      "type": "District",
+      "cities": []
+    },
+    {
+      "id": 5286,
+      "name": "West End",
+      "state_code": null,
+      "latitude": "18.17153940",
+      "longitude": "-63.17191270",
+      "type": "District",
+      "cities": []
+    }
+  ]
+}

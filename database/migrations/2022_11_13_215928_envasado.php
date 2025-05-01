@@ -13,7 +13,7 @@ class Envasado extends Migration
      */
     public function up()
     {
-        Schema::create('prod_envasado', function (Blueprint $table) {
+       /* Schema::create('prod_envasado', function (Blueprint $table) {
             $table->bigIncrements('envId');
             $table->bigInteger('empId')->unsigned();
             $table->foreign('empId')->references('empId')->on('parm_empresa');
@@ -53,7 +53,7 @@ class Envasado extends Migration
             $table->foreign('envId')->references('envId')->on('prod_envasado');           
             $table->string('envLink');        
             $table->timestamps();
-        });
+        });*/
     }
 
     /**

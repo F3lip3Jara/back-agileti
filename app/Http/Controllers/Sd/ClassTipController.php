@@ -31,7 +31,8 @@ class ClassTipController extends Controller
                 [
                     
                     'clasTipDes'   => $request->clasTipDes,
-                    'clasTip'   => $request->clasTip
+                    'clasTip'   => $request->clasTip,
+                    'clasTipCod'   => $request->clasTipCod
                 ]
             );
     
@@ -51,11 +52,12 @@ class ClassTipController extends Controller
         {
             $name        = $request['name'];
             $empId       = $request['empId'];
-    
+
             $affected = SdTipClase::create([
                 'empId'      => $empId,
                 'clasTipDes' => $request->clasTipDes,
-                'clasTip'    => $request->clasTip
+                'clasTip'    => $request->clasTip,
+                'clasTipCod' => $request->clasTipCod
             ]);
     
             if (isset($affected)) {

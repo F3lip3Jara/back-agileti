@@ -58,37 +58,7 @@ class DatabaseSeeder extends Seeder
       
         
        
-        Etapa::create([
-                'empId'  =>1,
-                'etaDes' => 'MEZCLA' ,
-                'etaProd'=> 'S']);
-
-        Etapa::create([
-                'empId'  =>1,
-                'etaDes' => 'EXTRUSIÓN' ,
-                'etaProd'=> 'S']);
-
-        Etapa::create([
-                'empId'  =>1,
-                'etaDes' => 'TERMOFORMADO' ,
-                'etaProd'=> 'S']);
-    
-        Etapa::create([
-                'empId'  =>1,
-                'etaDes' => 'ENVASADO' ,
-                'etaProd'=> 'S']);
-
-        Etapa::create([
-                'empId'  =>1,
-                'etaDes' => 'INYECCIÓN' ,
-                'etaProd'=> 'S']);
-
-        Etapa::create([
-                'empId'  =>1,
-                'etaDes' => 'IMPRESIÓN' ,
-                'etaProd'=> 'S']);
-
-
+   
         Roles::create([        
           'rolDes' =>'SUPER',
           'empId'  => 1
@@ -145,40 +115,36 @@ class DatabaseSeeder extends Seeder
          $json = file_get_contents("database/data_prd/Opciones.json");
          $data = json_decode($json);
          foreach ($data as $obj) {
-             Opciones::create(array(                 
+
+
+             $create = Opciones::create(array(                 
                  'optDes'   => $obj->optDes,
                  'optLink'  => $obj->optLink              
              ));
-         }
 
-         //Acciones 
-         $json = file_get_contents("database/data_prd/Acciones.json");
-         $data = json_decode($json);
-         foreach ($data as $obj) {
-             Acciones::create(array(                 
-                 'accDes'     => $obj->accDes,
-                 'accUrl'     => $obj->accUrl,
-                 'accetaDes'  => $obj->accetaDes,
-                 'acceVig'    => $obj->acceVig,  
-                 'optId'      => $obj->optId,
-                 'accType'    => $obj->accType,
-                 'accMessage' => $obj->accMessage            
-             ));
-         }
+             $idOpt = $obj->optId;
 
+
+             $json = file_get_contents("database/data_prd/Acciones.json");
+             $data = json_decode($json);
     
-        //Sub Opciones
-       /* $json = file_get_contents("database/data_prd/Sub_Opt.json");
-        $data = json_decode($json);
-        foreach ($data as $obj) {
-            SubOpciones::create(array(
-                'optId'     => $obj->idOpt,
-                'optSDes'   => $obj->optSDes, 
-                'optSLink'  => $obj->optSLink              
-            ));
-        }
-*/
-        
+            foreach ($data as $obj2) {
+                if($obj2->optId == $idOpt){
+                    Acciones::create(array(                 
+                        'accDes'     => $obj2->accDes,
+                        'accUrl'     => $obj2->accUrl,
+                        'accetaDes'  => $obj2->accetaDes,
+                        'acceVig'    => $obj2->acceVig,  
+                        'optId'      => $create->id,
+                        'accType'    => $obj2->accType,
+                        'accMessage' => $obj2->accMessage            
+                    ));
+                }
+            }
+
+
+         }
+
         Module:: create([
             'empId'  => 1,
             'molDes' => 'Seguridad',
@@ -244,42 +210,6 @@ class DatabaseSeeder extends Seeder
             'rolId' => 1
         ]);
 
-
-  /*      $json = file_get_contents("database/data_prd/Menu.json");
-        $data = json_decode($json);
-    
-        foreach ($data as $request) {
-            ModuleOpt::create([          
-                'empId'=>1,
-                'idRol'=>$request->idRol,
-                'idMol'=>$request->idMol,
-                'idOpt'=>$request->idOpt
-            ]); 
-        }*/ 
-
-    /*    $json = file_get_contents("database/data_prd/Maquina.json");
-        $data = json_decode($json);
-
-        foreach($data as $request){
-            Maquinas::create(['idEta' => $request->idEta ,
-                               'maqCod'=> $request->maqCod ,
-                               'maqTip'=> '',
-                               'maqDes'=> $request->maqDes ,
-                               'empId'=> 1 ]);
-        }
-
-        $json = file_get_contents("database/data_prd/Motivo.json");
-        $data = json_decode($json);
-
-        foreach($data as $request){
-            MovRechazo::create([
-                'motDes' => $request->motDes,
-                'empId'  =>1,
-                'etaID'  => $request->idEta
-            ]);
-        }
-*/
-      
 
       
  
@@ -449,60 +379,8 @@ class DatabaseSeeder extends Seeder
                 'grpsDes' => $request->GrpSDes
             ]);
         }
-
-        
-        $faker = Faker::create();      
-        $json = file_get_contents("database/data_prd/Productos.json");
-        $data = json_decode($json);
-    
-        foreach ($data as $request) {
-
-            /*'idMon'    => $request->idMon,
-            'idGrp'    => $request->idGrp,
-            'idSubGrp' => $request->idSubGrp,
-            'idUn'     => $request->idUn,
-            'idCol'    => $request->idCol
-            */
-
-            $idMon    = 0;
-            $idGrp    = 0;
-            $idSubGrp = 0;
-            $idCol    = 0;
-            $idUn     = 0;
-            
-            $moneda   = Moneda::select('monId')->where('monCod', $request->monCod)->get();
-            
-            foreach($moneda as $itemx){
-                $idMon = $itemx->monId;
-            }
-
-            $grupos = SubGrupo::select('grpId' , 'grpsId')->where('grpScod',$request->grpScod)->get();
-          
-            foreach($grupos as $item){
-                $idGrp    = $item->grpId;
-                $idSubGrp = $item->grpsId;
-            }
-
-            $xcolcod = '';
-            $xcolcod = strval($request->colCod);      
-            
-            $colores = Color::select('colId')->where('colCod',$xcolcod)->get();
-            
-            foreach($colores as $color){
-                $idCol = $color->colId;        
-            }      
-     
-            $unidad = UnidadMed::select('unId')->where('unCod',$request->unCod)->get();
-
-            foreach($unidad as $item){
-                $idUn = $item->unId;
-            }
-
-        }
-           
-
-            //views
- DB::unprepared(file_get_contents('database/sqlviews/create-view-template.sql'));  
+        //views
+        DB::unprepared(file_get_contents('database/sqlviews/create-view-template.sql'));  
 
 
   }

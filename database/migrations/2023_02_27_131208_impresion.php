@@ -13,7 +13,7 @@ class Impresion extends Migration
      */
     public function up()
     {
-        Schema::create('prod_impresion', function (Blueprint $table) {
+       /* Schema::create('prod_impresion', function (Blueprint $table) {
             $table->bigIncrements('impId');
             $table->bigInteger('empId')->unsigned();
             $table->foreign('empId')->references('empId')->on('parm_empresa');
@@ -83,7 +83,7 @@ class Impresion extends Migration
             $table->string('imptPrdLote');
             $table->timestamps();
         });
-
+*/
 
     }
 

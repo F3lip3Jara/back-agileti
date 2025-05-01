@@ -1,0 +1,51 @@
+{
+  "id": 30,
+  "name": "Bouvet Island",
+  "iso3": "BVT",
+  "iso2": "BV",
+  "numeric_code": "074",
+  "phone_code": "0055",
+  "capital": "",
+  "currency": "NOK",
+  "currency_name": "Norwegian Krone",
+  "currency_symbol": "ko",
+  "tld": ".bv",
+  "native": "Bouvetøya",
+  "region": "",
+  "region_id": 0,
+  "subregion": "",
+  "subregion_id": 0,
+  "nationality": "Bouvet Island",
+  "timezones": [
+    {
+      "zoneName": "Europe/Oslo",
+      "gmtOffset": 3600,
+      "gmtOffsetName": "UTC+01:00",
+      "abbreviation": "CET",
+      "tzName": "Central European Time"
+    }
+  ],
+  "translations": {
+    "ko": "부벳 섬",
+    "pt-BR": "Ilha Bouvet",
+    "pt": "Ilha Bouvet",
+    "nl": "Bouveteiland",
+    "hr": "Otok Bouvet",
+    "fa": "جزیره بووه",
+    "de": "Bouvetinsel",
+    "es": "Isla Bouvet",
+    "fr": "Île Bouvet",
+    "ja": "ブーベ島",
+    "it": "Isola Bouvet",
+    "zh-CN": "布维岛",
+    "tr": "Bouvet Adasi",
+    "ru": "Остров Буве",
+    "uk": "Острів Буве",
+    "pl": "Wyspa Bouveta"
+  },
+  "latitude": "-54.43333333",
+  "longitude": "3.40000000",
+  "emoji": "🇧🇻",
+  "emojiU": "U+1F1E7 U+1F1FB",
+  "states": []
+}
