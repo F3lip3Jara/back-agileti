@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Parametros;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\LogSistema;
+use App\Models\FieldDefinition;
 use App\Models\Parametros\Proveedor;
 use App\Models\viewProveedores;
 use Exception;
@@ -15,25 +16,52 @@ class ProveedorController extends Controller
 {
     public function index(Request $request)
     {
-        $table   = 'proveedores';
-        $columns = Schema::getColumnListing($table);
-        $columns = array_filter($columns, function ($column) {
-            return $column !== 'empId'; // Columna a excluir
-        });
-        $columns = array_values($columns); // Reindexar el array si es necesa
+        $empId       = $request['empId'];
+         $query = viewProveedores::select('*')
+        ->orderBy('proveedores.created_at', 'desc')
+        ->where('proveedores.empId', $empId)
+        ->first();
+
+        if ($query) {
+            $columns = array_keys($query->toArray());            
+            // Obtener definiciones de campos filtrables
+            $fieldDefinitions = FieldDefinition::whereIn('field_name', $columns)
+                ->where('is_filterable', 1)
+                ->get();
+            // Crear array de definiciones formateado
+            $columnDefinitions = [];
+            foreach ($fieldDefinitions as $definition) {
+                $columnDefinitions[] = [
+                    'campo' => $definition->field_name,
+                    'label' => $definition->label,
+                    'data_type' => $definition->data_type
+                ];
+            }
+        } else {
+            $columnDefinitions = [];
+        }
+
         $filtros = $request['filter'];
         $filtros = json_decode(base64_decode($filtros));
-        
-       if(isset($filtros)){       
-        $data     = viewProveedores::query()->filter($filtros)->get();
-       }else{
-         $data    = viewProveedores::select('*')->take(1500)->get();
-       }       
+       // return $filtros;
+        if(isset($filtros)){       
+            $data     = viewProveedores::query()->filter($filtros)
+            ->orderBy('proveedores.created_at', 'desc') 
+            ->where('proveedores.empId', $empId)
+            ->get();
+        } else {
+            $data     = viewProveedores::select('*')                       
+                         ->orderBy('proveedores.created_at', 'desc')
+                         ->where('proveedores.empId', $empId)
+                        ->take(1500)->get();
+        }
+       
         $resources = array(
-                "data"   => $data,
-                "colums" => $columns
+            "data" => $data,
+            "columns" => $columnDefinitions
         );
-        return response()->json($resources, 200); 
+        return response()->json($resources, 200); 		
+    
     
     }
 

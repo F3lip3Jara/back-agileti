@@ -50,7 +50,7 @@ class SdOrdController extends Controller
 
         $filtros = $request['filter'];
         $filtros = json_decode(base64_decode($filtros));
-       
+       // return $filtros;
         if(isset($filtros)){       
             $data = SdOrden::query()   
                     ->filter($filtros)                   
@@ -170,25 +170,29 @@ class SdOrdController extends Controller
     }
 
     public function cerrarRecepcion(Request $request){
+
         $orden    = $request['orden'];
         $name     = $request['name'];
         $empId    = $request['empId'];
         $idUser   = $request['idUser'];
-        $centroId = $orden['centroId'];
-        $almId    = $orden['almId'];
-        
-       
+        $centroId = $orden['ordenInfo']['centroId'];
+        $almId    = $orden['ordenInfo']['almId'];
+        $ordId    = $orden['ordenInfo']['ordId'];
         //formato de la orden :  orden_json_temp.json
-        $affected = SdTIblns::all()
+        $affected = SdTIblns::select()
         ->where('empId', $empId )
         ->where('centroId', $centroId)
         ->where('almId' , $almId)
-        ->where('stockTblpnJson' , $orden);
-
-        
+        ->where('stockTblpnJson', json_encode($orden))
+        ->get(); 
+       
+     //   dd($affected);
+       
         if(sizeof($affected) > 0){
+            $job = new StockMov($empId, $idUser, $name, $centroId, $almId);
+            dispatch($job);  
             $resources = array(
-                array("error" => '0', 'mensaje' => 'Error la orden ya tiene traslado iniciado' , 'type' => 'info')
+                array("error" => '0', 'mensaje' => 'Error la orden ya tiene recepción ingresada' , 'type' => 'info')
             );
             return response()->json($resources, 200);
         }else{
@@ -196,14 +200,14 @@ class SdOrdController extends Controller
                     'empId'         => $empId,
                     'centroId'      => $centroId,
                     'almId'         => $almId,   
-                    'stockTblpnJson'=> $orden
+                    'stockTblpnJson'=> json_encode($orden)
                 ]);
                            
                 if (isset($affected)) {
                     $job = new LogSistema( $request->log['0']['optId'] , $request->log['0']['accId'] , $name , $empId , $request->log['0']['accDes'], $request->log['0']['accTip']);
                     dispatch($job);
-                   // $job = new StockMov($empId, $idUser, $name, $centroId, $almId);
-                   // dispatch($job);         
+                    $job = new StockMov($empId, $idUser, $name, $centroId, $almId);
+                    dispatch($job);         
                     $resources = array(
                         array("error" => '0', 'mensaje' => $request->log['0']['accMessage'], 'type' => $request->log['0']['accType'])
                     );

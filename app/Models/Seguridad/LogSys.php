@@ -12,7 +12,7 @@ class LogSys extends Model
     use HasFactory;
     protected $table    ='segu_log_sys';
     protected $fillable = [
-        'idLog',
+        'logId',
         'empId',
         'etaId',
         'etaDesId',

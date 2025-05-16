@@ -10,8 +10,11 @@ use Illuminate\Http\Request;
 class ClassTipController extends Controller
 {
         public function index(Request $request)
-        {
-            return SdTipClase::select('*')->get();
+        {   
+            $empId       = $request['empId'];
+            return SdTipClase::select('*')
+            ->where('empId', $empId)
+            ->get();
         }
 
      /*   public function indexFil(Request $request)

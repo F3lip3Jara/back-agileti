@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Seguridad;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\LogSistema;
+use App\Models\FieldDefinition;
 use App\Models\Parametros\Empleado;
 use App\Models\Seguridad\Empresa;
 use App\Models\Seguridad\Roles;
@@ -99,16 +100,29 @@ class UserController extends Controller
                         'type' => 'danger'
                     )
                 );
+                $etaId    = 1;
+                $etaDesId = 2;
+                $name     = $user->name;
+                $empId    = $user->empId; 
+               // $encrypted =bcrypt($resources);
+                $job = new LogSistema($etaId , $etaDesId , $name , $empId , 'Error usuario desactivado' , 'success');
+                dispatch($job);
                 return response()->json($resources, 203);
             }
         } else {
+            $etaId    = 1;
+            $etaDesId = 3;
+            $name     = $email;
+            $empId    = 0;
+            $job = new LogSistema($etaId , $etaDesId , $name , $empId , 'Error usuario no logeado' , 'success');
+            dispatch($job);
             $resources = array(
                 array(
                     "error" => "1", 'mensaje' => "El usuario no logeado",
                     'type' => 'danger'
                 )
             );
-            return response()->json($resources, 200);
+          
         }
 
         }catch(QueryException $ex){
@@ -216,7 +230,52 @@ class UserController extends Controller
     public function trabUsuarios(Request $request)
     {
 
-        return $data = viewTblUser::select('*')->where('empId', $request['empId'])->get();
+        //return $data = viewTblUser::select('*')->where('empId', $request['empId'])->get();
+        $query = viewTblUser::select('*')
+        ->where('empId', $request->empId) 
+        ->orderBy('tblusuarios.created_at', 'desc')
+        ->first();
+
+        if ($query) {
+            $columns = array_keys($query->toArray());            
+            // Obtener definiciones de campos filtrables
+            $fieldDefinitions = FieldDefinition::whereIn('field_name', $columns)
+                ->where('is_filterable', 1)
+                ->get();
+            // Crear array de definiciones formateado
+            $columnDefinitions = [];
+            foreach ($fieldDefinitions as $definition) {
+                $columnDefinitions[] = [
+                    'campo' => $definition->field_name,
+                    'label' => $definition->label,
+                    'data_type' => $definition->data_type
+                ];
+            }
+        } else {
+            $columnDefinitions = [];
+        }
+
+        $filtros = $request['filter'];
+        $filtros = json_decode(base64_decode($filtros));
+       // return $filtros;
+        if(isset($filtros)){       
+            $data     = viewTblUser::query()->filter($filtros)
+            ->orderBy('tblusuarios.created_at', 'desc')
+            ->where('empId', $request->empId)
+            ->get();
+        } else {
+            $data     = viewTblUser::select('*')
+                         ->where('empId', $request->empId)
+                         ->orderBy('tblusuarios.created_at', 'desc')
+                        ->take(1500)->get();
+        }
+       
+        $resources = array(
+            "data" => $data,
+            "columns" => $columnDefinitions
+        );
+        return response()->json($resources, 200); 		
+    
     }
 
     public function trabUsuariosAmd(Request $request)

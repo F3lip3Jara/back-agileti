@@ -186,6 +186,7 @@ return Application::configure(basePath: dirname(__DIR__))
             '/liberarOrdenes',
             '/estadoOrden',
             '/cerrarRecepcion',
+            '/updateConfigField',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

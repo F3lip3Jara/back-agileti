@@ -17,7 +17,8 @@ class SdTIblns extends Model
         'centroId',
         'almId',
         'stockTblpnJson',
-        'stockTstatus'
+        'stockTstatus',
+        'ordId'
     ];
     public function getCreatedAtAttribute($value){
         return Carbon::createFromTimestamp(strtotime($value))

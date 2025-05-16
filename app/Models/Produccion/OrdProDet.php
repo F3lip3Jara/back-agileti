@@ -19,7 +19,7 @@ class OrdProDet extends Model
             'orpdPrdCod',
             'orpdPrdDes',
             'orpdCant',
-            'orpdDtlCustShortText1',
+            'orpdDtlCustShortText1',  // Cantidad recibida
             'orpdDtlCustShortText2',  // 
             'orpdDtlCustShortText3',  // 
             'orpdDtlCustShortText4',  // 

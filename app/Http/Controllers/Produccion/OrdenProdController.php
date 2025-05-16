@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Produccion;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\LogSistema;
+use App\Models\FieldDefinition;
 use App\Models\Produccion\OrdenProduccion;
 use App\Models\Produccion\OrdProDet;
 use App\Models\Parametros\Producto;
@@ -19,30 +20,52 @@ class OrdenProdController extends Controller
 {
     public function index(Request $request)
     {
-        $table   = 'orden_produccion';
-        $columns = Schema::getColumnListing($table);
-        $columns = array_filter($columns, function ($column) {
-            return $column !== 'empId'; // Columna a excluir
-        });
+        
+        $query = viewOrdenProduccion::select('*')
+        ->where('empId', $request->empId) 
+        ->orderBy('orden_produccion.created_at', 'desc')
+        ->first();
 
-        $columns = array_values($columns); // Reindexar el array si es necesario
+        if ($query) {
+            $columns = array_keys($query->toArray());            
+            // Obtener definiciones de campos filtrables
+            $fieldDefinitions = FieldDefinition::whereIn('field_name', $columns)
+                ->where('is_filterable', 1)
+                ->get();
+            // Crear array de definiciones formateado
+            $columnDefinitions = [];
+            foreach ($fieldDefinitions as $definition) {
+                $columnDefinitions[] = [
+                    'campo' => $definition->field_name,
+                    'label' => $definition->label,
+                    'data_type' => $definition->data_type
+                ];
+            }
+        } else {
+            $columnDefinitions = [];
+        }
+
         $filtros = $request['filter'];
         $filtros = json_decode(base64_decode($filtros));
-        
-       if(isset($filtros)){       
-        $data     = viewOrdenProduccion::query()->filter($filtros)
-                    ->where('empId', $request->empId)
-                    ->get();
-       }else{
-         $data    = viewOrdenProduccion::select('*')->where('empId', $request->empId)->take(1500)->get();
-       }
+       // return $filtros;
+        if(isset($filtros)){       
+            $data     = viewOrdenProduccion::query()->filter($filtros)
+            ->orderBy('orden_produccion.created_at', 'desc')
+            ->where('empId', $request->empId)
+            ->get();
+        } else {
+            $data     = viewOrdenProduccion::select('*')
+                         ->where('empId', $request->empId)
+                         ->orderBy('orden_produccion.created_at', 'desc')
+                        ->take(1500)->get();
+        }
        
         $resources = array(
-                "data"   => $data,
-                "colums" => $columns
+            "data" => $data,
+            "columns" => $columnDefinitions
         );
- 	
-	  return response()->json($resources, 200); 
+        return response()->json($resources, 200); 		
+    
     }
 
     public function update(Request $request)
@@ -138,10 +161,6 @@ class OrdenProdController extends Controller
         $latitudEnvio   = $data['latitudEnvio'];
         $longitudEnvio  = $data['longitudEnvio'];
         $notas          = $data['notas'];
-
-
-        
-     
 
         $affected       = OrdenProduccion::create([
               

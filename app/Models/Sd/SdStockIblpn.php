@@ -20,6 +20,8 @@ class SdStockIblpn extends Model
         'iblpnId',
         'prdId',
         'stockIblpnQty',
+        'created_at',
+        'updated_at'
     ];
 
     public function getCreatedAtAttribute($value){

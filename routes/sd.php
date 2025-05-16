@@ -45,7 +45,7 @@ use Illuminate\Support\Facades\Route;
 
  //Stock
  Route::get('trabSdStock'       , [StockController::class,'index']);
-
+ Route::get('trabSdStockIblpn'  , [StockController::class,'indexIblpn']);
  
 
 ?>

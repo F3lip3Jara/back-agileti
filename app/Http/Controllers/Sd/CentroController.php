@@ -12,7 +12,10 @@ class CentroController extends Controller
 {
     public function index(Request $request)
     {
-        return Centro::select('*')->get();
+        $empId       = $request['empId'];
+        return Centro::select('*')
+        ->where('empId', $empId)
+        ->get();
     }
 
     public function update(Request $request)

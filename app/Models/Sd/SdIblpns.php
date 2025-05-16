@@ -19,11 +19,11 @@ class SdIblpns extends Model
         'iblpnOriginalBarcode',
         'iblpnStatus', //P: Pendiente, A: Almacenado, R: Reservado, T: En tránsito
         'iblpnType', //I: Ingreso, E: Egreso
-        'iblpnHdrCustShortText1', //Orden de SD
-        'iblpnHdrCustShortText2', //Id de la Orden de SD
-        'iblpnHdrCustShortText3', //Sector destino 
-        'iblpnHdrCustShortText4', //Sector Código
-        'iblpnHdrCustShortText5', // Cantidad Orignal
+        'iblpnHdrCustShortText1', 
+        'iblpnHdrCustShortText2', 
+        'iblpnHdrCustShortText3', 
+        'iblpnHdrCustShortText4',
+        'iblpnHdrCustShortText5', 
         'iblpnHdrCustShortText6',
     ];
 

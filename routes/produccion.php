@@ -4,11 +4,11 @@ use App\Http\Controllers\Produccion\OrdenProdController;
 use Illuminate\Support\Facades\Route;
 
 
-	Route::get('trabOrdenProduccion'        ,[OrdenProdController::class,'index']);
-   Route::post('insOrdProduccion'          ,[OrdenProdController::class,'ins']);	
-   Route::post('updOrdProduccion'          ,[OrdenProdController::class,'update']);	
-   Route::get('OrdPDet'                    ,[OrdenProdController::class,'OrdPDet']);	
-   Route::get('empresafilPdf'                 ,[OrdenProdController::class,'empresafilPdf']);	
+      Route::get('trabOrdenProduccion'        ,[OrdenProdController::class,'index']);
+      Route::post('insOrdProduccion'          ,[OrdenProdController::class,'ins']);	
+      Route::post('updOrdProduccion'          ,[OrdenProdController::class,'update']);	
+      Route::get('OrdPDet'                    ,[OrdenProdController::class,'OrdPDet']);	
+      Route::get('empresafilPdf'              ,[OrdenProdController::class,'empresafilPdf']);	
    /* Route::post('insOT'          ,[OrdenTrabController::class,'ins']);
     Route::get('trabOt'          ,[OrdenTrabController::class,'index']);
     Route::get('verOtIny'        ,[OrdenTrabController::class,'verOtIny']);

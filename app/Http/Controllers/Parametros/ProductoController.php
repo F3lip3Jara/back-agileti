@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Parametros;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\LogSistema;
+use App\Models\FieldDefinition;
 use App\Models\Parametros\Producto;
 use App\Models\Parametros\Moneda;
 use App\Models\viewProductos;
@@ -20,23 +21,47 @@ class ProductoController extends Controller
 
     public function index(Request $request)
     {
+        $query = viewProductos::select('*')
+        ->orderBy('productos.created_at', 'desc')
+        ->first();
 
-        $table   = 'productos';
-        $columns = Schema::getColumnListing($table);
+        if ($query) {
+            $columns = array_keys($query->toArray());            
+            // Obtener definiciones de campos filtrables
+            $fieldDefinitions = FieldDefinition::whereIn('field_name', $columns)
+                ->where('is_filterable', 1)
+                ->get();
+            // Crear array de definiciones formateado
+            $columnDefinitions = [];
+            foreach ($fieldDefinitions as $definition) {
+                $columnDefinitions[] = [
+                    'campo' => $definition->field_name,
+                    'label' => $definition->label,
+                    'data_type' => $definition->data_type
+                ];
+            }
+        } else {
+            $columnDefinitions = [];
+        }
+
         $filtros = $request['filter'];
-        $filtros = json_decode(base64_decode($filtros));  
-       if(isset($filtros)){ 
-      
-        $data     = viewProductos::query()->filter($filtros)->get();
-       }else{
-         $data    = viewProductos::all()->take(1000);
-       }
+        $filtros = json_decode(base64_decode($filtros));
+       // return $filtros;
+        if(isset($filtros)){       
+            $data     = viewProductos::query()->filter($filtros)
+            ->orderBy('productos.created_at', 'desc')
+            ->get();
+        } else {
+            $data     = viewProductos::select('*')
+                         ->orderBy('productos.created_at', 'desc')
+                        ->take(1500)->get();
+        }
        
         $resources = array(
-                "data"   => $data,
-                "colums" => $columns
+            "data" => $data,
+            "columns" => $columnDefinitions
         );
-        return response()->json($resources, 200);    
+        return response()->json($resources, 200); 		
     }
 
     public function update(Request $request)

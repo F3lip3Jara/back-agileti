@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\FieldDefinitionController;
 use App\Http\Controllers\LogController;
+use App\Http\Controllers\Reportes\GeneralesReporteController;
 use App\Http\Controllers\Seguridad\RolesController;
 use App\Http\Controllers\Seguridad\MenuController;
 use App\Http\Controllers\Seguridad\ModuloController;
@@ -10,6 +12,10 @@ use App\Http\Controllers\Seguridad\UserController;
 use App\Http\Controllers\Seguridad\subOpcionesController;
 use Illuminate\Support\Facades\Route;
 
+    //REPORTE SEGURIDAD
+    Route::get('reporteSeguridad', [GeneralesReporteController::class, 'getReporteSeguridad']);
+
+    
     //USUARIO
     Route::get('trabUsuarios'   , [UserController::class,'trabUsuarios']);
     Route::get('valUsuario'     , [UserController::class,'valUsuario']);
@@ -62,6 +68,8 @@ use Illuminate\Support\Facades\Route;
     //Log sistema
     Route::get('trabLogSys'     , [LogController::class, 'index']);
     Route::post('insLogSys'     , [LogController::class, 'ins']);
+    Route::get('trabConfigField', [FieldDefinitionController::class, 'index']);
+    Route::post('updateConfigField', [FieldDefinitionController::class, 'updateFromExcel']);
 
        //Notificaciones
   /*     Route::get('trabNot'          , [NotificacionesController::class,'index']);

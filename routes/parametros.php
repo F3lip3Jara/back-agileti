@@ -19,9 +19,11 @@ use App\Http\Controllers\Parametros\TipoPagoController;
 use App\Http\Controllers\Parametros\UnidadMedidaController;
 use App\Http\Controllers\Parametros\ProductoController;
 use App\Http\Controllers\Parametros\TallaController;
+use App\Http\Controllers\Reportes\GeneralesReporteController;
 use Illuminate\Support\Facades\Route;
 
-      
+    //Reporte de parametros
+    Route::get('reporteParametros' , [GeneralesReporteController::class,'getReporteParametros']);
     //Gerencia
     Route::get('trabGerencia'   , [GerenciaController::class,'index']);
     Route::post('updGerencia'   , [GerenciaController::class,'update']);
