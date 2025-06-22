@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Jobs\MonedaRegularizacion;
+use App\Models\FieldDefinition;
 use App\Models\Seguridad\Acciones;
 use Faker\Factory as Faker;
 use App\Models\Parametros\BinCol;
@@ -28,10 +30,12 @@ use App\Models\Parametros\Proveedor;
 use App\Models\Parametros\Region;
 use App\Models\Seguridad\RolesModule;
 use App\Models\Parametros\SubGrupo;
+use App\Models\Parametros\Talla;
 use App\Models\SubOpciones;
 use App\Models\Parametros\UnidadMed;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class DatabaseSeeder extends Seeder 
 {
@@ -53,11 +57,6 @@ class DatabaseSeeder extends Seeder
             'empFono' => '+569997551015',
             'empImg'  => ''
           ]);
-
-
-      
-        
-       
    
         Roles::create([        
           'rolDes' =>'SUPER',
@@ -218,9 +217,9 @@ class DatabaseSeeder extends Seeder
       $data = json_decode($json);
       foreach ($data as $obj) {
           Color::create(array(
-              'colCod' => $obj->ColCod,
-              'colDes' => $obj->ColDes,
-              'empId'  => 1                
+              'colCod' => $obj->colCod,
+              'colDes' => $obj->colDes,
+              'empId'  => $obj->empId               
           ));
       }
 
@@ -327,6 +326,8 @@ class DatabaseSeeder extends Seeder
               $idCiu = $item->ciuId;
               $idCom = $item->comId;  
           }
+
+
           Proveedor::create([
               'empId'    => 1,
               'prvRut'   => $request->PRVRUT,
@@ -379,9 +380,125 @@ class DatabaseSeeder extends Seeder
                 'grpsDes' => $request->GrpSDes
             ]);
         }
+
+
+        //Tallas
+        
+        Talla::create([
+            'empId' => 1,
+            'tallaCod' => 'S',
+            'tallaDes' => 'S'
+        ]);
+        Talla::create([
+            'empId' => 1,
+            'tallaCod' => 'M',
+            'tallaDes' => 'M'
+        ]);
+        Talla::create([
+            'empId' => 1,
+            'tallaCod' => 'L',
+            'tallaDes' => 'L'
+        ]);
+
+        Talla::create([
+            'empId' => 1,
+            'tallaCod' => 'XL',
+            'tallaDes' => 'XL'
+        ]);
+
+
+
+        //Color
+
+        $json = file_get_contents("database/data_prd/Color.json");
+        $data = json_decode($json);
+
+        foreach ($data as $request) {
+            Color::create([
+                'empId' => 1,   
+                'colCod' => $request->colCod,
+                'colDes' => $request->colDes
+            ]);
+        }
+        
+
+        //Productos
+        $json = file_get_contents("database/data_prd/Productos.json");
+        $data = json_decode($json);
+
+        foreach ($data as $request) {
+            Producto::create([
+             
+                    'prdCod' => $request->prdCod,
+                    'prdDes' => $request->prdDes,
+                    'prdObs' => $request->prdObs,
+                    'prdRap' => $request->prdRap,
+                    'prdEan' => $request->prdEan,
+                    'prdTip' => $request->prdTip,
+                    'prdCost' => $request->prdCost,
+                    'prdNet' => $request->prdNet,
+                    'prdBrut' => $request->prdBrut,
+                    'prdInv' => $request->prdInv,
+                    'prdPes' => $request->prdPes,
+                    'prdMin' => $request->prdMin,
+                    'monId' => $request->monId,
+                    'grpId' => $request->grpId,
+                    'grpsId' => $request->grpsId,
+                    'unId' => $request->unId,
+                    'colId' => $request->colId,
+                    'empId' => 1,
+                    'prdIdExt' => $request->prdIdExt,
+                    'prdUrl' => $request->prdUrl,
+                    'prdMig' => $request->prdMig,
+                    'tallaId' => $request->tallaId,
+                    'prdAncho' => $request->prdAncho,
+                    'prdLargo' => $request->prdLargo,
+                    'prdAlto' => $request->prdAlto,
+                    'prdPeso' => $request->prdPeso,
+                    'prdVolumen' => $request->prdVolumen
+
+            ]);
+        }
         //views
         DB::unprepared(file_get_contents('database/sqlviews/create-view-template.sql'));  
 
 
+        // Obtener todas las tablas de la base de datos (MySQL específico)
+        $tables = DB::select('SHOW TABLES');
+        $databaseName = DB::getDatabaseName();
+        $tableExcluded = ['field_definitions' , 'cache' , 'cache_locks' , 'failed_jobs' ,   'job_batches' , 'jobs' , 'migrations' , 'sessions' , 'telescope_entries' , 'telescope_entries_tags' , 'telescope_monitoring' , 'webhook_oms'];
+
+        foreach ($tables as $tableObj) {
+            // MySQL devuelve el nombre de la columna como 'Tables_in_nombrebasededatos'
+            $table = $tableObj->{"Tables_in_$databaseName"};
+
+            // Saltar la tabla de metadatos para evitar recursividad
+            if (in_array($table, $tableExcluded)) continue;
+
+            $columns = Schema::getColumnListing($table);
+
+            foreach ($columns as $column) {
+                FieldDefinition::updateOrCreate(
+                    ['field_name' => "$column"], // campo calificado con el nombre de la tabla
+                    [   
+                        'table_name' => $table,
+                        'label' => ucfirst(str_replace('_', ' ', $column)),
+                        'description' => "Campo '$column' de la tabla '$table'",
+                        'data_type' => $this->getColumnType($table, $column),
+                        'options' => null,
+                        'is_filterable' => true,
+                    ]
+                );
+            }
+        }
+
+        $job = new MonedaRegularizacion();
+        dispatch($job); 
+
+  }
+
+  protected function getColumnType($table, $column)
+  {
+    return DB::getSchemaBuilder()->getColumnType($table, $column);
   }
 }

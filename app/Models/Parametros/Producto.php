@@ -54,10 +54,6 @@ class Producto extends Model
         ->toDateTimeString();
     }
 
-    
-   
-
-
     public function scopeFilter($query, $filter) { 
 
     
@@ -80,9 +76,15 @@ class Producto extends Model
                 $query->whereBetween('created_at', [$fecha_inicio, $fecha_fin]);
             }else{
                 if( count( $item->values ) > 0 && $column != ""){  
+                    $count = 0;
                     foreach($item->values as $values){
-                        $query->orWhere($column, 'like', '%' . $values. '%');
-                    }                  
+                        if($count == 0){
+                            $query->where($column, 'like', '%' . $values. '%');
+                        }else{
+                            $query->orWhere($column, 'like', '%' . $values. '%');
+                        }
+                        $count++;
+                    }                   
                 }else{                
                     if($column != "" && count( $item->values ) > 0 ){
                         $query->where($item->column, 'LIKE', '%' . $item->values[0]. '%');

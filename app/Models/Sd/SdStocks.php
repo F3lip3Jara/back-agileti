@@ -33,21 +33,38 @@ class SdStocks extends Model
     }
 
     public function scopeFilter($query, $filter) { 
-        foreach($filter as $item){                             
-            $column = $item->column;
-            if( count( $item->values ) > 0 && $column != ""){  
-                foreach($item->values as $values){
-                    $query->orWhere($column, 'like', '%' . $values. '%');
-                }                  
+
+    
+        foreach($filter as $item){ 
+                            
+            $column = $item->column; 
+            $count  = 0;
+            $fecha_inicio = Carbon::create(2025, 1, 1);
+            $fecha_fin = Carbon::create(2025, 1, 31);
+            
+            if($column == "created_at"){
+                foreach($item->values as $value){
+                    if($count == 0){
+                        $fecha_inicio = Carbon::create($value);
+                    }else{
+                        $fecha_fin = Carbon::create($value);
+                    }
+                    $count++;
+                }    
+                $query->whereBetween('sd_stocks.created_at', [$fecha_inicio, $fecha_fin]);
             }else{
+                if( count( $item->values ) > 0 && $column != ""){  
+                    foreach($item->values as $values){
+                        $query->where($column, 'like', '%' . $values. '%');
+                    }                  
+                }else{                
+                    if($column != "" && count( $item->values ) > 0 ){
+                        $query->where($item->column, 'LIKE', '%' . $item->values[0]. '%');
+                    }
                 
-                if($column != "" && count( $item->values ) > 0 ){
-                    $query->where($item->column, 'LIKE', '%' . $item->values[0]. '%');
-                }
-               
-            }      
-         
-        }
+                } 
+            }
         
+        }
     }
 }

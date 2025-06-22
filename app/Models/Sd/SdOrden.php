@@ -23,22 +23,22 @@ class SdOrden extends Model
         'ordestatus', // Estado del pedido P:Pendiente L:Liberado V:Verificado A:Almacenado
         'ordTip', // Tipo Salida / Entrada
         'ordTipDes',//Tipo Salida / Entrada
-        'ordClase',//Clase 
-        'ordClaseDes',//Clase 
-        'ordHdrCustShortText1',//Direccion
-        'ordHdrCustShortText2',//Ciudad
-        'ordHdrCustShortText3',//Región
-        'ordHdrCustShortText4',//Identificación de orden migrado
-        'ordHdrCustShortText5',//Estado de la orden
-        'ordHdrCustShortText6',//Teléfono
-        'ordHdrCustShortText7',//Nombre
-        'ordHdrCustShortText8',//Email
-        'ordHdrCustShortText9',//Courier
-        'ordHdrCustShortText10',//Latitud de la orden
-        'ordHdrCustShortText11',// Lomgitud de la orden
-        'ordHdrCustShortText12',//Clase de documento
-        'ordHdrCustShortText13',//Ruta
-        'ordHdrCustLongText1'//Comentarios
+        'ordClase',//CODIGO Clase 
+        'ordClaseDes',//Descripcion Clase 
+        'ordHdrCustShortText1',//Documento relacionado
+        'ordHdrCustShortText2',//Proveedor  / Cliente
+        'ordHdrCustShortText3',//Nombre Proveedor / Cliente
+        'ordHdrCustShortText4',//Fecha de la orden
+        'ordHdrCustShortText5',//Fecha promesa entrega
+        'ordHdrCustShortText6',//Cantidad de lineas       
+        'ordHdrCustShortText7',//
+        'ordHdrCustShortText8',//
+        'ordHdrCustShortText9',//
+        'ordHdrCustShortText10',//
+        'ordHdrCustShortText11',//
+        'ordHdrCustShortText12',//
+        'ordHdrCustShortText13',//
+        'ordHdrCustLongText1'//
     ];
 
   /*  public function cliente()
@@ -75,9 +75,15 @@ public function scopeFilter($query, $filter) {
             $query->whereBetween('created_at', [$fecha_inicio, $fecha_fin]);
         }else{
             if( count( $item->values ) > 0 && $column != ""){  
+                $count = 0;
                 foreach($item->values as $values){
-                    $query->orWhere($column, 'like', '%' . $values. '%');
-                }                  
+                    if($count == 0){
+                        $query->where($column, 'like', '%' . $values. '%');
+                    }else{
+                        $query->orWhere($column, 'like', '%' . $values. '%');
+                    }
+                    $count++;
+                }             
             }else{                
                 if($column != "" && count( $item->values ) > 0 ){
                     $query->where($item->column, 'LIKE', '%' . $item->values[0]. '%');

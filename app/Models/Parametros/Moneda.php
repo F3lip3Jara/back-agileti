@@ -12,7 +12,7 @@ class Moneda extends Model
 {
     use HasFactory;
    
-
+    protected $primaryKey = 'monId';
     protected $table    ='parm_moneda';
     protected $fillable = [
         'monId',

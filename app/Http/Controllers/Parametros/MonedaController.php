@@ -129,118 +129,131 @@ class MonedaController extends Controller
 
     public function indicadores(){
         $hoy = Carbon::now('America/Santiago');
-        
         // Si es fin de semana, retrocedemos al último día hábil
         if ($hoy->isWeekend()) {
             $hoy = $hoy->copy()->previousWeekday();
         }
-        
-        // Obtenemos el día hábil anterior
-        $diaAnterior = $hoy->copy()->previousWeekday();
-
         // Verificar si hay datos en MonedaConversion
         $existenDatos = MonedaConversion::exists();
-
-        if (!$existenDatos) {
+       
+        if (!$existenDatos) {        
             $job = new MonedaRegularizacion();
             dispatch($job); 
         }
-        $count          = Moneda::where('monInt', 'S')->count();
+
+        //validamos si es feriado el día hoy 
+        $esFeriado = $this->obtenerFeriados($hoy->format('Y-m-d'));
         
+
+        //while si es feriado, restamos un día
+        while($esFeriado == 1){
+            $hoy = $hoy->subDay();
+            $esFeriado = $this->obtenerFeriados($hoy->format('Y-m-d'));
+        }
+
+        $diaAnterior = $hoy->copy()->previousWeekday();
+
+        //validamos si tenemos datos en moneda conversion 
         $validaHoy      = MonedaConversion::where('moncFecha', $hoy->format('Y-m-d'))->count();
         $validaAnterior = MonedaConversion::where('moncFecha', $diaAnterior->format('Y-m-d'))->count();
 
-        if($validaHoy == 0){
-            $job = new MonedaRegularizacion();
-            dispatch($job); 
-        }
-     
-        if ($validaHoy && $validaAnterior && $validaHoy === $count) {
-            $resultado = $this->obtenerResultadoFormateado($hoy, $diaAnterior);
-            return response()->json($resultado, 200);
-        } else {
-            $data = Moneda::where('monInt', 'S')->get();
-          
-            foreach($data as $item){
+        if($validaHoy == 0 || $validaAnterior == 0){
+             //regularizamos el mes completo 
+            $ok =  $this->regularizarMes($hoy , $diaAnterior);
 
-                $client = new \GuzzleHttp\Client([
+            if($ok){
+                $resultado = $this->obtenerResultadoFormateado($hoy , $diaAnterior);
+                return response()->json($resultado, 200);
+            }else{
+                return response()->json('error', 204);
+            }
+
+        }else{
+            $resultado = $this->obtenerResultadoFormateado($hoy , $diaAnterior);
+            return response()->json($resultado, 200);
+        }
+    }
+
+    public function obtenerFeriados($hoy) {
+            try {
+                $client = new Client([
                     'verify' => false,
                     'timeout' => 30,
                     'connect_timeout' => 30
                 ]);
+    
+                $response = $client->request('GET', 'https://api.boostr.cl/holidays.json', [
+                    'headers' => [
+                        'accept' => 'application/json'
+                    ]
+                ]);
+    
+                $feriados = json_decode($response->getBody(), true);            
+                $data = $feriados['data']; 
                 
-                $fechasAConsultar = [];
-                if (!$validaHoy) $fechasAConsultar[] = $hoy;
-                if (!$validaAnterior) $fechasAConsultar[] = $diaAnterior;
-            
-                foreach($fechasAConsultar as $fecha) {
-                    if ($fecha->isWeekend()) {
-                        continue;
+                //dd($data);
+                // Verificar si hoy es feriado
+                $esFeriado = 0;
+
+                foreach ($data as $feriado) {
+                
+                    if ($feriado['date'] === $hoy) {
+                   
+                        $esFeriado = 1;
+                        break;
                     }
-                    
-                    try {
-                        $url = 'http://api.cmfchile.cl/api-sbifv3/recursos_api/'.$item['monIntVal'].'?apikey=80e3f542faaf21efc24dd8111aca2eeb7dd28b28&formato=json';
-                        $response = $client->request('GET', $url);
-                        $datos = json_decode($response->getBody(), true);
-                        $arr = $item['monIntArray'];
+                } 
 
-                        if (isset($datos[$arr])) {
-                            foreach($datos[$arr] as $valor) {
-                                MonedaConversion::updateOrCreate(
-                                    [
-                                        'monId' => $item['monId'],
-                                        'moncFecha' => Carbon::createFromFormat('Y-m-d', $valor['Fecha'])->format('Y-m-d')
-                                    ],
-                                    [
-                                        'moncValor' => str_replace(',', '.', str_replace('.', '', $valor['Valor']))
-                                    ]
-                                );
-                            }
-                        }
-                    } catch (\GuzzleHttp\Exception\ConnectException $e) {
-                        return response()->json([
-                            'error' => true,
-                            'mensaje' => 'Error de conexión con API SBIF: ' . $e->getMessage()
-                        ], 500);
-                    } catch (\Exception $e) {
-                        $esFeriado = $this->obtenerFeriados();
-                       
-                        if($esFeriado['esFeriado']){
-                            $diaAnterior_c = new Carbon($esFeriado['ultimoDiaRegistrado']);
-                            $hoy_c = Carbon::now('America/Santiago')->format('Y-m-d');
-                            $validaAnterior_c = MonedaConversion::
-                                            where('moncFecha', $diaAnterior_c->format('Y-m-d'))
-                                            ->where('monId', $item['monId'])
-                                            ->get();
-                            
+                return $esFeriado;
+               
+                
+    
+            } catch (\Exception $e) {
+                return array(
+                    'esFeriado' => 0,
+                    'fecha' => $hoy,
+                    'ultimoDiaRegistrado' => null,
+                    'error' => $e->getMessage()
+                );
+            }
+    }
 
-                            if(sizeof($validaAnterior_c) > 0){
-                                MonedaConversion::updateOrCreate(
-                                    [
-                                        'monId' => $item['monId'],
-                                        'moncFecha' =>$hoy_c
-                                    ],
-                                    [
-                                        'moncValor' => str_replace(',', '.', str_replace('.', '', $validaAnterior_c[0]['moncValor']))
-                                    ]
-                                );
-                            }
+    public function regularizarMes($hoy , $diaAnterior){
 
+        $anio = $hoy->format('Y');
+        $mes = $hoy->format('m');
 
-                           
-                        }else{
-                            return response()->json([
-                                'error' => true,
-                                'mensaje' => 'Error de conexión con API SBIF: ' . $e->getMessage()
-                            ], 500);
-                        }
-                    }
+        $client = new Client([
+            'verify' => false,
+            'timeout' => 30,
+            'connect_timeout' => 30
+        ]);
+
+        $monedas = Moneda::where('monInt', 'S')->get();
+
+        foreach($monedas as $item){
+            $url = 'http://api.cmfchile.cl/api-sbifv3/recursos_api/'.$item['monIntVal'].'/'.$anio.'/'.$mes.'?apikey=80e3f542faaf21efc24dd8111aca2eeb7dd28b28&formato=json';
+            $response = $client->request('GET', $url);
+            $datos = json_decode($response->getBody(), true);
+            $arr = $item['monIntArray'];
+
+            if (isset($datos[$arr])) {
+                foreach($datos[$arr] as $valor){
+                    MonedaConversion::updateOrCreate(
+                        [
+                            'monId' => $item['monId'],
+                            'moncFecha' => Carbon::createFromFormat('Y-m-d', $valor['Fecha'])->format('Y-m-d')
+                        ],
+                        [
+                            'moncValor' => str_replace(',', '.', str_replace('.', '', $valor['Valor']))
+                        ]
+                    );
                 }
             }
-
-            $resultado = $this->obtenerResultadoFormateado($hoy, $diaAnterior);
-            return response()->json($resultado, 200);
         }
+
+        return true;
+
     }
 
     private function obtenerResultadoFormateado($hoy, $diaAnterior) {
@@ -279,60 +292,5 @@ class MonedaController extends Controller
 
         return $resultado;
     }
-
-    public function obtenerFeriados() {
-            try {
-                $client = new Client([
-                    'verify' => false,
-                    'timeout' => 30,
-                    'connect_timeout' => 30
-                ]);
-    
-                $response = $client->request('GET', 'https://api.boostr.cl/holidays.json', [
-                    'headers' => [
-                        'accept' => 'application/json'
-                    ]
-                ]);
-    
-                $feriados = json_decode($response->getBody(), true);
-                $data = $feriados['data'];
-             
-            
-                $hoy = Carbon::now('America/Santiago')->format('Y-m-d');
-              
-                // Verificar si hoy es feriado
-                $esFeriado = false;
-                foreach ($data as $feriado) {
-                    if ($feriado['date'] === $hoy) {
-                        $esFeriado = true;
-                        break;
-                    }
-                }   
-
-           
-                if ($esFeriado) {
-                    // Si es feriado, obtener el último día registrado
-                    $ultimoDia = Carbon::now('America/Santiago')->subDay();
-                    while ($ultimoDia->isWeekend()) {
-                        $ultimoDia->subDay();
-                    }
-
-                    $esFeriado = array(
-                        'esFeriado' => true,
-                        'fecha' => $hoy,
-                        'ultimoDiaRegistrado' => $ultimoDia->format('Y-m-d')
-                    );
-    
-                    return $esFeriado;
-                }
-                
-                return $esFeriado;
-                
-    
-            } catch (\Exception $e) {
-                return $e;
-            }
-    }
-    
        
 }

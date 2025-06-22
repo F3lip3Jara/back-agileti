@@ -11,7 +11,7 @@ class MonedaConversion extends Model
 {
     use HasFactory;
    
-
+    protected $primaryKey = 'moncId';
     protected $table    ='parm_moneda_conversion';
     protected $fillable = [
         'moncId',
