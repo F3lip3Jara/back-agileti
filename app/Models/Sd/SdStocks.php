@@ -34,7 +34,7 @@ class SdStocks extends Model
 
     public function scopeFilter($query, $filter) { 
 
-    
+   
         foreach($filter as $item){ 
                             
             $column = $item->column; 
@@ -54,17 +54,23 @@ class SdStocks extends Model
                 $query->whereBetween('sd_stocks.created_at', [$fecha_inicio, $fecha_fin]);
             }else{
                 if( count( $item->values ) > 0 && $column != ""){  
+                    $count = 0;
                     foreach($item->values as $values){
-                        $query->where($column, 'like', '%' . $values. '%');
-                    }                  
+                        if($count == 0){
+                            $query->where($column, 'like', '%' . $values. '%');
+                        }else{
+                            $query->orWhere($column, 'like', '%' . $values. '%');
+                        }
+                        $count++;
+                    }                   
                 }else{                
                     if($column != "" && count( $item->values ) > 0 ){
                         $query->where($item->column, 'LIKE', '%' . $item->values[0]. '%');
                     }
-                
+                   
                 } 
             }
-        
+         
         }
-    }
+     }
 }

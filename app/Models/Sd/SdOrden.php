@@ -52,7 +52,7 @@ class SdOrden extends Model
     }
 */
 
-
+    
 public function scopeFilter($query, $filter) { 
 
    
@@ -83,7 +83,7 @@ public function scopeFilter($query, $filter) {
                         $query->orWhere($column, 'like', '%' . $values. '%');
                     }
                     $count++;
-                }             
+                }                   
             }else{                
                 if($column != "" && count( $item->values ) > 0 ){
                     $query->where($item->column, 'LIKE', '%' . $item->values[0]. '%');
@@ -94,18 +94,6 @@ public function scopeFilter($query, $filter) {
      
     }
  }
-
-
-
-    public function getCreatedAtAttribute($value){
-        return Carbon::createFromTimestamp(strtotime($value))
-        ->timezone(Config::get('app.timezone'))
-        ->toDateTimeString();
-    }
-   
-    public function getUpdatedAtAttribute($value){
-        return Carbon::createFromTimestamp(strtotime($value))
-        ->timezone(Config::get('app.timezone'))
-        ->toDateTimeString();
-    }
+ 
 }
+

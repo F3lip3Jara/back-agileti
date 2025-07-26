@@ -185,7 +185,7 @@ class StockController extends Controller
             $filtros = json_decode(base64_decode($filtros));
            // return $filtros;
             if(isset($filtros)){       
-                $data     =SdStocks::query()       
+                $data     =SdStockIblpn::query()       
                 ->filter($filtros)
                 ->join('sd_centro', 'sd_centro.centroId', '=', 'sd_stocks_iblpns.centroId')   
                 ->join('sd_centro_alm', 'sd_centro_alm.almId', '=', 'sd_stocks_iblpns.almId')   

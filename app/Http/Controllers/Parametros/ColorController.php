@@ -71,11 +71,9 @@ class ColorController extends Controller
     public function del(Request $request)
     {
         $name        = $request['name'];
-        $empId       = $request['empId'];
-
-
-        $xid    = $request->colId;
-        $valida = Producto::all()->where('colId', $xid)->take(1);
+        $empId       = $request['empId'];       
+        $xid         = $request->colId;    
+        $valida      = Producto::all()->where('colId', $xid)->take(1);
         //si la variable es null o vacia elimino el rol
         if (sizeof($valida) > 0) {
             //en el caso que no se ecuentra vacia no puedo eliminar
@@ -87,7 +85,7 @@ class ColorController extends Controller
             );
             return response()->json($resources, 200);
         } else {
-            $affected = Color::where('colId', $xid)->delete();
+            $affected = Color::where('colId', $xid)->where('empId', $empId)->delete();
 
             if ($affected > 0) {
                 $job = new LogSistema( $request->log['0']['optId'] , $request->log['0']['accId'] , $name , $empId , $request->log['0']['accDes'], $request->log['0']['accTip']);
@@ -95,6 +93,7 @@ class ColorController extends Controller
                 $resources = array(
                 array("error" => '0', 'mensaje' => $request->log['0']['accMessage'], 'type' => $request->log['0']['accType'])
                 );
+                return response()->json($resources, 200);
             } else {
                 $resources = array(
                     array("error" => "2", 'mensaje' => "No se encuentra registro", 'type' => 'warning')

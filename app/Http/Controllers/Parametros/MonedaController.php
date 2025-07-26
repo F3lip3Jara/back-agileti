@@ -153,11 +153,27 @@ class MonedaController extends Controller
 
         $diaAnterior = $hoy->copy()->previousWeekday();
 
-        //validamos si tenemos datos en moneda conversion 
-        $validaHoy      = MonedaConversion::where('moncFecha', $hoy->format('Y-m-d'))->count();
-        $validaAnterior = MonedaConversion::where('moncFecha', $diaAnterior->format('Y-m-d'))->count();
+        $monedas = Moneda::where('monInt', 'S')->get();
+        $ok = false;
+        
+        foreach($monedas as $item){
+            $validaHoy = MonedaConversion::where('monId', $item['monId'])->where('moncFecha', $hoy->format('Y-m-d'))->count();
+            $validaAnterior = MonedaConversion::where('monId', $item['monId'])->where('moncFecha', $diaAnterior->format('Y-m-d'))->count();
 
-        if($validaHoy == 0 || $validaAnterior == 0){
+            if($validaHoy == 0 || $validaAnterior == 0){
+                $ok =  $this->regularizarMes($hoy , $diaAnterior);
+                //SALGO DEL FOR SI OK ES FALSE
+                if(!$ok){
+                    break;
+                }
+            }
+        }
+
+        //validamos si tenemos datos en moneda conversion 
+       // $validaHoy      = MonedaConversion::where('moncFecha', $hoy->format('Y-m-d'))->count();
+       // $validaAnterior = MonedaConversion::where('moncFecha', $diaAnterior->format('Y-m-d'))->count();
+     
+        if(!$ok){
              //regularizamos el mes completo 
             $ok =  $this->regularizarMes($hoy , $diaAnterior);
 

@@ -492,37 +492,61 @@ class UserController extends Controller
     {
         try {
             $data = request()->all();
-            return $data;
-            $usuario = json_decode(base64_decode($data['usuario']));
-            $imgName  =  $usuario->imgName;
+         //  return $data;
+            $empId = $data['empId'];
+            $idUser = $data['idUser'];
+            $usuario = json_decode(base64_decode($data['user']));
+          //  return $usuario;
+            $emploAvatar  =  $usuario->emploAvatar;
             $name     =  $usuario->name;
             $emploNom = $usuario->empName;
             $emploApe = $usuario->empApe;
-            $id = User::where('name', $name)->get();
-           
-            return $id;
-            $valida = Empleado::where('id', $id)->update([
-                'emploAvatar' => $imgName,
-                'emploNom'    => $emploNom,
-                'emploApe'    => $emploApe
-            ]);
-        
-            if ($valida == 1) {
+            $mantenerPassword = $usuario->mantenerPassword;
+            $password = $usuario->password;
+            $newPassword = $usuario->newPassword;
+            $id = User::where('id', $idUser)->get();
+
+         //   return $id;
+
+            if($mantenerPassword == 1){
+              //valida si la password es igual a la actual y si es asi actualizo el usuario
+              if(Hash::check($password, User::find($idUser)->password)){
+                $valida = User::where('id', $idUser)->update([
+                    'password' => bcrypt($newPassword)
+                ]);
+              }else{
                 $resources = array(
-                    array(
-                        "error" => "0", 'mensaje' => "Usuario actualizado",
-                        'type' => 'success'
-                    )
+                    array("error" => '1', 'mensaje' => 'Contraseña actual incorrecta', 'type' => 'danger')
                 );
                 return response()->json($resources, 200);
-            } else {
+              }
+            }          
+                
+            $valida = Empleado::find($idUser);             
+             //si encuentro el usuario actualizo el avatar   
+            if ($valida->emploId > 0) {    
+                                    
+                    $valida = Empleado::where('id', $idUser)->update([
+                        'emploAvatar' => $emploAvatar,
+                        'emploNom'    => $emploNom,
+                        'emploApe'    => $emploApe                      
+                    ]);
+                
+
+                
+                $job = new LogSistema( $request->log['0']['optId'] , $request->log['0']['accId'] , $name , $empId , $request->log['0']['accDes'], $request->log['0']['accTip']);
+                dispatch($job);                
                 $resources = array(
-                    array(
-                        "error" => "1", 'mensaje' => "Error en el servidor",
-                        'type' => 'danger'
-                    )
-                );
-                return response()->json($resources, 500);
+                    array("error" => '0', 'mensaje' => $request->log['0']['accMessage'], 'type' => $request->log['0']['accType'])
+                );    
+                return response()->json($resources, 200);
+            } else {
+                $job = new LogSistema( $request->log['0']['optId'] , $request->log['0']['accId'] , $name , $empId , $request->log['0']['accDes'], $request->log['0']['accTip']);
+                dispatch($job);                
+                $resources = array(
+                    array("error" => '0', 'mensaje' => $request->log['0']['accMessage'], 'type' => $request->log['0']['accType'])
+                );    
+                return response()->json($resources, 200);
             }
         } catch (Exception $ex) {
             return $ex;
