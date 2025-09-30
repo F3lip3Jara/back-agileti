@@ -1,12 +1,15 @@
 <?php
 
+use App\Http\Controllers\BultosController;
 use App\Http\Controllers\Sd\AlmacenController;
 use App\Http\Controllers\Sd\CentroController;
 use App\Http\Controllers\Sd\ClassTipController;
+use App\Http\Controllers\Sd\PalletController;
 use App\Http\Controllers\Sd\PdfOrdenController;
 use App\Http\Controllers\Sd\SdOrdController;
 use App\Http\Controllers\Sd\SectorController;
 use App\Http\Controllers\Sd\StockController;
+use App\Http\Controllers\Sd\UbicacionesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -47,5 +50,16 @@ use Illuminate\Support\Facades\Route;
  Route::get('trabSdStock'       , [StockController::class,'index']);
  Route::get('trabSdStockIblpn'  , [StockController::class,'indexIblpn']);
  
+//Ubicacione    
+Route::get('trabSdUbicaciones' , [UbicacionesController::class,'index']);
+Route::post('insSdUbicaciones' , [UbicacionesController::class,'ins']);
+Route::post('delSdUbicaciones' , [UbicacionesController::class,'del']);
+Route::post('updSdUbicaciones' , [UbicacionesController::class,'update']);
+
+//Bultos 
+
+Route::get('searchBulto' , [BultosController::class,'searchBulto']);
+
+Route::post('createPallet' , [PalletController::class,'create']);
 
 ?>

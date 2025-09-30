@@ -53,5 +53,9 @@ class Sector extends Model
     }
  }
 
+   public function scopeSectorIdCodigo($query, $sectorCod){
+    return $query->where('secCod', $sectorCod)->first();
+   }
+
 
 }

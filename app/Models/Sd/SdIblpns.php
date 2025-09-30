@@ -19,12 +19,16 @@ class SdIblpns extends Model
         'iblpnOriginalBarcode',
         'iblpnStatus', //P: Pendiente, A: Almacenado, R: Reservado, T: En tránsito
         'iblpnType', //I: Ingreso, E: Egreso
-        'iblpnHdrCustShortText1', 
-        'iblpnHdrCustShortText2', 
-        'iblpnHdrCustShortText3', 
-        'iblpnHdrCustShortText4',
-        'iblpnHdrCustShortText5', 
-        'iblpnHdrCustShortText6',
+        'iblpnHdrCustShortText1', //Orden de Sd
+        'iblpnHdrCustShortText2', //Orden de SD detalle
+        'iblpnHdrCustShortText3',//LPN 
+        'iblpnHdrCustShortText4', //Estado de la caja
+        'iblpnHdrCustShortText5', //Metodo digitacion 
+        'iblpnHdrCustShortText6',//Centro
+        'iblpnHdrCustShortText7',//Almacen
+        'iblpnHdrCustShortText8',//Sector
+        'iblpnHdrCustShortText9',//Sector Codigo
+        'iblpnHdrCustShortText10',//Ubicacion
     ];
 
     public function getCreatedAtAttribute($value){

@@ -128,8 +128,9 @@ class StockController extends Controller
 
     public function indexIblpn(Request $request)
     {
-        $query = SdStockIblpn::select(
-            'sd_stocks_iblpns.stockIblpnId',            
+
+        $select = [
+            'sd_stocks_iblpns.stockIblpnId',
             'sd_stocks_iblpns.empId',
             'sd_stocks_iblpns.centroId',
             'sd_stocks_iblpns.almId',
@@ -139,7 +140,9 @@ class StockController extends Controller
             'sd_iblpns.iblpnStatus',
             'sd_iblpns.iblpnOriginalBarcode',
             'sd_iblpns.iblpnHdrCustShortText3',
-            'sd_iblpns.iblpnHdrCustShortText4',            
+            'sd_iblpns.iblpnHdrCustShortText4',
+            'sd_iblpns.iblpnHdrCustShortText9',
+            'sd_iblpns.iblpnHdrCustShortText10',
             'sd_iblpns.iblpnQty',
             'cenDes',
             'almDes',
@@ -151,9 +154,11 @@ class StockController extends Controller
             'sub_grupo',
             'url',
             'sd_stocks_iblpns.created_at',
-            'sd_stocks_iblpns.updated_at'
-    
-           )
+            'sd_stocks_iblpns.updated_at',
+        ];
+
+                    
+        $query = SdStockIblpn::select($select)          
            ->join('sd_centro', 'sd_centro.centroId', '=', 'sd_stocks_iblpns.centroId')   
            ->join('sd_centro_alm', 'sd_centro_alm.almId', '=', 'sd_stocks_iblpns.almId')   
            ->join('productos', 'productos.id', '=', 'sd_stocks_iblpns.prdId')   
@@ -195,39 +200,14 @@ class StockController extends Controller
                 ->orderBy('sd_stocks_iblpns.created_at', 'desc')
                 ->get();
             } else {
-                $data    =  SdStockIblpn::select(
-                    'sd_stocks_iblpns.stockIblpnId',            
-                    'sd_stocks_iblpns.empId',
-                    'sd_stocks_iblpns.centroId',
-                    'sd_stocks_iblpns.almId',
-                    'sd_stocks_iblpns.iblpnId',
-                    'sd_stocks_iblpns.prdId',
-                    'sd_stocks_iblpns.stockIblpnQty',
-                    'sd_iblpns.iblpnStatus',
-                    'sd_iblpns.iblpnOriginalBarcode',
-                    'sd_iblpns.iblpnHdrCustShortText3',
-                    'sd_iblpns.iblpnHdrCustShortText4',            
-                    'sd_iblpns.iblpnQty',
-                    'cenDes',
-                    'almDes',
-                    'cod_pareo',
-                    'descripcion',
-                    'talla',
-                    'color',
-                    'grupo',
-                    'sub_grupo',
-                    'url',
-                    'sd_stocks_iblpns.created_at',
-                    'sd_stocks_iblpns.updated_at'
-            
-                   )
-                   ->join('sd_centro', 'sd_centro.centroId', '=', 'sd_stocks_iblpns.centroId')   
-                   ->join('sd_centro_alm', 'sd_centro_alm.almId', '=', 'sd_stocks_iblpns.almId')   
-                   ->join('productos', 'productos.id', '=', 'sd_stocks_iblpns.prdId')   
-                   ->join('sd_iblpns', 'sd_iblpns.iblpnId', '=', 'sd_stocks_iblpns.iblpnId')   
-                   ->where('sd_stocks_iblpns.empId', $request->empId)    
-                   ->orderBy('sd_stocks_iblpns.created_at', 'desc')
-                     ->take(1500)->get();
+                $data    =  SdStockIblpn::select($select)
+                            ->join('sd_centro', 'sd_centro.centroId', '=', 'sd_stocks_iblpns.centroId')   
+                            ->join('sd_centro_alm', 'sd_centro_alm.almId', '=', 'sd_stocks_iblpns.almId')   
+                            ->join('productos', 'productos.id', '=', 'sd_stocks_iblpns.prdId')   
+                            ->join('sd_iblpns', 'sd_iblpns.iblpnId', '=', 'sd_stocks_iblpns.iblpnId')   
+                            ->where('sd_stocks_iblpns.empId', $request->empId)    
+                            ->orderBy('sd_stocks_iblpns.created_at', 'desc')
+                             ->take(1500)->get();
             }
            
             $resources = array(

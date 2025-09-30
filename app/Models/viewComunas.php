@@ -37,26 +37,48 @@ class viewComunas extends Model
        ->timezone(Config::get('app.timezone'))
        ->toDateTimeString();
    }
-
+    
    public function scopeFilter($query, $filter) { 
 
+   
     foreach($filter as $item){ 
                         
         $column = $item->column; 
-
-        if( count( $item->values ) > 0 && $column != ""){  
-            foreach($item->values as $values){
-                $query->orWhere($column, 'like', '%' . $values. '%');
-            }                  
+        $count  = 0;
+        $fecha_inicio = Carbon::create(2025, 1, 1);
+        $fecha_fin = Carbon::create(2025, 1, 31);
+        
+        if($column == "created_at"){
+            foreach($item->values as $value){
+                if($count == 0){
+                    $fecha_inicio = Carbon::create($value);
+                }else{
+                    $fecha_fin = Carbon::create($value);
+                }
+                $count++;
+            }    
+            $query->whereBetween('created_at', [$fecha_inicio, $fecha_fin]);
         }else{
-            
-            if($column != "" && count( $item->values ) > 0 ){
-                $query->where($item->column, 'LIKE', '%' . $item->values[0]. '%');
-            }
-           
-        }      
+            if( count( $item->values ) > 0 && $column != ""){  
+                $count = 0;
+                foreach($item->values as $values){
+                    if($count == 0){
+                        $query->where($column, 'like', '%' . $values. '%');
+                    }else{
+                        $query->orWhere($column, 'like', '%' . $values. '%');
+                    }
+                    $count++;
+                }                   
+            }else{                
+                if($column != "" && count( $item->values ) > 0 ){
+                    $query->where($item->column, 'LIKE', '%' . $item->values[0]. '%');
+                }
+               
+            } 
+        }
      
     }
+ }
+
     
-}
 }

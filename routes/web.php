@@ -44,3 +44,7 @@ require __DIR__ . '/weebhooksOms.php';
 Route::get('comuna'       , [ComunaController::class,'index']);
 
 Route::post('estadoOrden'       , [WebhookController::class,'estadoOrden']);
+
+
+
+Route::get('valEtiqeta', [ComunaController::class,'valEtiqeta']);

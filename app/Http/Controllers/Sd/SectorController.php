@@ -34,12 +34,9 @@ class SectorController extends Controller
         $resources = array(
                 "data"   => $data,
                 "colums" => $columns
-        );
- 
+        ); 
 	
 	  return response()->json($resources, 200); 
-
-
     }
 
 

@@ -247,12 +247,14 @@ class RolesModuloController extends Controller
         $empId = $request['empId'];
         $molId = $request['molId'];
     
-        // Realiza la consulta de opciones
+        // Realiza la consulta de opciones y si existen subopciones las omito para no duplicar las opciones
         $datos = ModuleOpt::select('segu_emp_mol_opt.molId', 'molDes', 'segu_emp_mol_opt.optId', 'optDes')
             ->join('segu_opciones', 'segu_opciones.optId', '=', 'segu_emp_mol_opt.optId')
             ->join('segu_modulo', 'segu_modulo.molId', '=', 'segu_emp_mol_opt.molId')
+            ->leftJoin('segu_emp_mol_submol_opt', 'segu_emp_mol_submol_opt.optId', '=', 'segu_emp_mol_opt.optId')
             ->where('segu_emp_mol_opt.molId', $molId)
             ->where('segu_emp_mol_opt.empId', $empId)
+            ->whereNull('segu_emp_mol_submol_opt.optId')
             ->get();
     
         // Realiza la consulta de subopciones

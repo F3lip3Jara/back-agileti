@@ -4,18 +4,24 @@ namespace App\Http\Controllers\Parametros;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\LogSistema;
+use App\Jobs\ValidaEtiqueta;
+use App\Models\FieldDefinition;
 use App\Models\Parametros\Comuna;
 use App\Models\viewComunas;
 use Illuminate\Http\Request;
 use  App\Models\Parametros\Proveedor;
 use App\Models\Parametros\PrvDirDes;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\BadResponseException;
+use GuzzleHttp\Exception\GuzzleException;
 
 class ComunaController extends Controller
 {
     public function index(Request $request)
     {
-        $table   = 'comunas';
+       /* $table   = 'comunas';
         $columns = Schema::getColumnListing($table);
 
         $columns = array_filter($columns, function ($column) {
@@ -37,7 +43,53 @@ class ComunaController extends Controller
                 "colums" => $columns
         );
        
-        return response()->json($resources, 200);
+        return response()->json($resources, 200);*/
+
+
+        $query = viewComunas::select('*')
+        ->orderBy('comunas.created_at', 'desc')
+        ->first();
+
+        if ($query) {
+            $columns = array_keys($query->toArray());            
+            // Obtener definiciones de campos filtrables
+            $fieldDefinitions = FieldDefinition::whereIn('field_name', $columns)
+                ->where('is_filterable', 1)
+                ->get();
+            // Crear array de definiciones formateado
+            $columnDefinitions = [];
+            foreach ($fieldDefinitions as $definition) {
+                $columnDefinitions[] = [
+                    'campo' => $definition->field_name,
+                    'label' => $definition->label,
+                    'data_type' => $definition->data_type
+                ];
+            }
+        } else {
+            $columnDefinitions = [];
+        }
+
+        $filtros = $request['filter'];
+        $filtros = json_decode(base64_decode($filtros));
+       // return $filtros;
+        if(isset($filtros)){   
+        
+            $data     = viewComunas::query()->filter($filtros)
+            ->orderBy('comunas.created_at', 'desc')
+            ->get();
+        } else {
+            $data     = viewComunas::select('*')
+                         ->orderBy('comunas.created_at', 'desc')
+                        ->take(1500)->get();
+        }
+       
+        $resources = array(
+            "data" => $data,
+            "columns" => $columnDefinitions
+        );
+        return response()->json($resources, 200); 	
+
+
     }
 
     public function update(Request $request)
@@ -162,5 +214,27 @@ class ComunaController extends Controller
             ->where('regId',  $data['regId'])
             ->get();
         return $datos;
+    }
+
+    function valEtiqeta(Request $request)
+    {
+        //Conectar a la api de etiqueta  por Guzzle
+       $pedidos = [
+      
+'1559060503478-01',
+'f1bce232-e726-47af-beba-487790ac4dd9',
+'b7b2113c-b796-4307-9651-a343caf6f68c',
+'cbb86ccf-348b-48c7-810a-2f0bef55288f',
+'1560900504707-01',
+'2d47f453-a09c-412c-898c-6ca72d7b2b3e',
+
+
+
+        ];
+        $job = new ValidaEtiqueta($pedidos, 'C');
+        dispatch($job);
+        return "OK";   
+  
+    
     }
 }

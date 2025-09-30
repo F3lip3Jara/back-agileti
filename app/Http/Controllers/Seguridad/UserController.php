@@ -492,15 +492,23 @@ class UserController extends Controller
     {
         try {
             $data = request()->all();
-         //  return $data;
+            $json = base64_decode($data['user'], true);
+            $usuario = json_decode($json);
+         
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $resources = array(
+                    array("error" => '1', 'mensaje' => 'Error al decodificar datos del usuario: ' . json_last_error_msg(), 'type' => 'danger')
+                );
+                return response()->json($resources, 400);
+            }
+            // return $usuario; // Comentado para evitar retorno prematuro
             $empId = $data['empId'];
             $idUser = $data['idUser'];
-            $usuario = json_decode(base64_decode($data['user']));
-          //  return $usuario;
-            $emploAvatar  =  $usuario->emploAvatar;
-            $name     =  $usuario->name;
-            $emploNom = $usuario->empName;
-            $emploApe = $usuario->empApe;
+            
+            $emploAvatar  =  $usuario->emploAvatar ?? '';
+            $name     =  $usuario->name ?? '';
+            $emploNom = $usuario->empName ?? '';
+            $emploApe = $usuario->empApe ?? '';
             $mantenerPassword = $usuario->mantenerPassword;
             $password = $usuario->password;
             $newPassword = $usuario->newPassword;
@@ -531,9 +539,6 @@ class UserController extends Controller
                         'emploNom'    => $emploNom,
                         'emploApe'    => $emploApe                      
                     ]);
-                
-
-                
                 $job = new LogSistema( $request->log['0']['optId'] , $request->log['0']['accId'] , $name , $empId , $request->log['0']['accDes'], $request->log['0']['accTip']);
                 dispatch($job);                
                 $resources = array(
@@ -549,7 +554,10 @@ class UserController extends Controller
                 return response()->json($resources, 200);
             }
         } catch (Exception $ex) {
-            return $ex;
+            $resources = array(
+                array("error" => '1', 'mensaje' => 'Error en el servidor: ' . $ex->getMessage(), 'type' => 'danger')
+            );
+            return response()->json($resources, 500);
         }
     }
 

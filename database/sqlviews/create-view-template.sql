@@ -58,7 +58,13 @@ CREATE OR REPLACE VIEW orden_produccion AS
         e.cenDes AS centro_destino,
         a.orpHdrCustShortText5 as 'latitud',
         a.orpHdrCustShortText6 as 'longitud',
-        a.orpHdrCustShortText9 as 'fech_promesa',        
+        a.orpHdrCustShortText9 as 'fech_promesa',  
+        (SELECT 
+                sum(`c`.`orpdDtlCustShortText1`)
+            FROM
+                `prod_orden_det` `c`
+            WHERE
+                `c`.`orpId` = `a`.`orpId`) AS `total_recibido`,
         `a`.`created_at` AS `created_at`,
         `a`.`updated_at` AS `updated_at`
     FROM

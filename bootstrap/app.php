@@ -11,6 +11,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Registrar middleware CORS personalizado
+        $middleware->alias([
+            'cors' => \App\Http\Middleware\CorsMiddleware::class,
+        ]);
+        
+        // Registrar middleware CORS globalmente
+        $middleware->append(\App\Http\Middleware\CorsMiddleware::class);
+        
         $middleware->validateCsrfTokens(except: [
             '/productos',
             '/log',
@@ -187,8 +195,13 @@ return Application::configure(basePath: dirname(__DIR__))
             '/estadoOrden',
             '/cerrarRecepcion',
             '/updateConfigField',
+            '/trabSdUbicaciones',
+            '/insSdUbicaciones',
+            '/delSdUbicaciones',
+            '/updSdUbicaciones',
+            '/createPallet',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         
-    })->create();
+    })->create(); 

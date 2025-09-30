@@ -60,16 +60,25 @@ class StockMov implements ShouldQueue
             $stockTblpnId     = $item->stockTblpnId;               
             $ordenInfo        = $dataJson->ordenInfo;
             $productos        = $dataJson->productos;
+            $recepcion        = $dataJson->recepcion;
             $ordId            = $ordenInfo->ordId;
             $centroId         = $ordenInfo->centroId;
             $almId            = $ordenInfo->almId;
-            $recepcion        = $item->recepcion;
             $orddNumber       = $ordenInfo->numeroOT;      
             $sectorId         = $recepcion->sectorId ?? '';
             $sectorCod        = $recepcion->sector ?? '';
-            $usuarioRecepcion = $recepcion->usuarioRecepcion ?? '';
+            $usuarioRecepcion = $recepcion->usuarioRecepcion ?? $this->name ?? '';
             $orpId            = SdOrden::where('ordId', $ordId)->value('ordHdrCustShortText1');
-           
+            
+            // Log para verificar los valores extraídos
+            Log::info('Valores extraídos del JSON:', [
+                'ordId' => $ordId,
+                'centroId' => $centroId,
+                'almId' => $almId,
+                'sectorId' => $sectorId,
+                'sectorCod' => $sectorCod,
+                'usuarioRecepcion' => $usuarioRecepcion
+            ]);
 
             foreach($productos as $producto){
                 $orddId            = $producto->orddId;
@@ -116,23 +125,32 @@ class StockMov implements ShouldQueue
                 $cenDes  = $almacen[0]['cenDes'];
 
                 SdMovStocks::create([
-                'empId'                     => $this->empId,
-                'stockMovTip'               => 'I',
-                'stockMovQty'               => $cantidadRecibida,
-                'prdId'                     => $prdId,
-                'stockMovHdrCustShortText1' => $centroId,
-                'stockMovHdrCustShortText2' => $cenDes,
-                'stockMovHdrCustShortText3' => $almId,
-                'stockMovHdrCustShortText4' => $almDes,
-                'stockMovHdrCustShortText5' => $this->idUser,
-                'stockMovHdrCustShortText6' => $this->name
+                        'empId'                     => $this->empId,
+                        'stockMovTip'               => 'I',
+                        'stockMovQty'               => $cantidadRecibida,
+                        'prdId'                     => $prdId,
+                        'stockMovHdrCustShortText1' => $centroId,
+                        'stockMovHdrCustShortText2' => $cenDes,
+                        'stockMovHdrCustShortText3' => $almId,
+                        'stockMovHdrCustShortText4' => $almDes,
+                        'stockMovHdrCustShortText5' => $this->idUser,
+                        'stockMovHdrCustShortText6' => $this->name
                 ]);
 
                 //LPN'S
                 foreach($lpnsku as $lpnItem){
-                 
-                  
-
+                    $ubicacionId = $lpnItem->ubicacionId ?? '';
+                    
+                    // Log para verificar los valores antes de crear el LPN
+                    Log::info('Creando LPN con valores:', [
+                        'lpnCodigo' => $lpnItem->lpnCodigo,
+                        'centroId' => $centroId,
+                        'almId' => $almId,
+                        'sectorId' => $sectorId,
+                        'sectorCod' => $sectorCod,
+                        'ubicacionId' => $ubicacionId
+                    ]);
+                    
                     $affected   = SdIblpns::create([                
                         'empId'                  => $this->empId,
                         'prdId'                  => $prdId,
@@ -144,7 +162,12 @@ class StockMov implements ShouldQueue
                         'iblpnHdrCustShortText3' => $lpnItem->lpnCodigo, //codigo de caja automatia front
                         'iblpnHdrCustShortText4' => $lpnItem->estado, //Estado de la caja
                         'iblpnHdrCustShortText5' => $lpnItem->metodoIngreso, //Metodo digitacion 
-                        'iblpnHdrCustShortText6' => $usuarioRecepcion //Usuario que genera la caja
+                        'iblpnHdrCustShortText6' => $centroId, //Centro
+                        'iblpnHdrCustShortText7' => $almId, //Almacen
+                        'iblpnHdrCustShortText8' => $sectorId, //Sector codigo
+                        'iblpnHdrCustShortText9' => $sectorCod ?? '', //Sector descripcion
+                        'iblpnHdrCustShortText10' => $ubicacionId ?? '', //Ubicacion descripcion
+
                     ]);
 
                     $iblpnId              = $affected['id']; 

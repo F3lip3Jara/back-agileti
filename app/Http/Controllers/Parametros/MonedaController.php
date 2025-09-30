@@ -128,65 +128,60 @@ class MonedaController extends Controller
     }
 
     public function indicadores(){
+
+           // Verificar si hay datos en MonedaConversion
+           $existenDatos = MonedaConversion::exists();
+       
+           if (!$existenDatos) {        
+               $job = new MonedaRegularizacion();
+               dispatch($job); 
+           }
+
         $hoy = Carbon::now('America/Santiago');
+        
         // Si es fin de semana, retrocedemos al último día hábil
         if ($hoy->isWeekend()) {
             $hoy = $hoy->copy()->previousWeekday();
         }
-        // Verificar si hay datos en MonedaConversion
-        $existenDatos = MonedaConversion::exists();
+
+       //Validamos si es feriado 
+       $esFeriado = $this->obtenerFeriados($hoy);
+       if($esFeriado == 1){
+         //si es feriado retrocedo un día 
+         $hoy = $hoy->copy()->subDay();
+       }
+
+        $monedatotal = Moneda::where('monInt', 'S')->count();
+        $monedatotal = $monedatotal *2;
+        $diaAnterior = $hoy->copy()->subDay();
+
+        //Valida si el día hoy  es lunes busco el día viernes anterior
+        if($hoy->format('l') == 'Monday'){
+            $diaAnterior = $diaAnterior->copy()->subDays(2);
+        }
        
-        if (!$existenDatos) {        
-            $job = new MonedaRegularizacion();
-            dispatch($job); 
+        //valido si el día anterior es feriado y si es retrocedo un día 
+        $esFeriado = $this->obtenerFeriados($diaAnterior);
+        if($esFeriado == 1){
+            $diaAnterior = $diaAnterior->copy()->subDay();
         }
-
-        //validamos si es feriado el día hoy 
-        $esFeriado = $this->obtenerFeriados($hoy->format('Y-m-d'));
         
+        //Busco si encuentro el mismo resultado en tabla moneda conversion
+        //Total registro en tabla moneda conversion entre el día anterior y el día actual
 
-        //while si es feriado, restamos un día
-        while($esFeriado == 1){
-            $hoy = $hoy->subDay();
-            $esFeriado = $this->obtenerFeriados($hoy->format('Y-m-d'));
-        }
+        $totalRegistro = MonedaConversion::where('moncFecha', '>=', $diaAnterior->format('Y-m-d'))
+                                          ->where('moncFecha', '<=', $hoy->format('Y-m-d'))
+                                          ->count();
 
-        $diaAnterior = $hoy->copy()->previousWeekday();
-
-        $monedas = Moneda::where('monInt', 'S')->get();
-        $ok = false;
-        
-        foreach($monedas as $item){
-            $validaHoy = MonedaConversion::where('monId', $item['monId'])->where('moncFecha', $hoy->format('Y-m-d'))->count();
-            $validaAnterior = MonedaConversion::where('monId', $item['monId'])->where('moncFecha', $diaAnterior->format('Y-m-d'))->count();
-
-            if($validaHoy == 0 || $validaAnterior == 0){
-                $ok =  $this->regularizarMes($hoy , $diaAnterior);
-                //SALGO DEL FOR SI OK ES FALSE
-                if(!$ok){
-                    break;
-                }
-            }
-        }
-
-        //validamos si tenemos datos en moneda conversion 
-       // $validaHoy      = MonedaConversion::where('moncFecha', $hoy->format('Y-m-d'))->count();
-       // $validaAnterior = MonedaConversion::where('moncFecha', $diaAnterior->format('Y-m-d'))->count();
-     
-        if(!$ok){
-             //regularizamos el mes completo 
-            $ok =  $this->regularizarMes($hoy , $diaAnterior);
-
-            if($ok){
-                $resultado = $this->obtenerResultadoFormateado($hoy , $diaAnterior);
-                return response()->json($resultado, 200);
-            }else{
-                return response()->json('error', 204);
-            }
-
-        }else{
+        if($totalRegistro == $monedatotal){
+          //Si el valor total es igual formateo los datos y los retorno 
+          $resultado = $this->obtenerResultadoFormateado($hoy , $diaAnterior);
+          return response()->json($resultado, 200);
+        }else{            
+            $this->regularizarMes($hoy , $diaAnterior);
             $resultado = $this->obtenerResultadoFormateado($hoy , $diaAnterior);
             return response()->json($resultado, 200);
+
         }
     }
 
