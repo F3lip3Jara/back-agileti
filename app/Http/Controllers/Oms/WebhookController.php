@@ -195,7 +195,7 @@ class WebhookController extends Controller
             // ... resto del procesamiento de datos existente ... 
             return response()->json($data, 200);
         } else {
-            return response()->json(['error' => 'Failed to fetch data'], $response->status());
+            return response()->json($response->body());
         }
     }
     

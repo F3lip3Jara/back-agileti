@@ -17,34 +17,13 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\GuzzleException;
 
+use Illuminate\Support\Facades\Storage;
+
 class ComunaController extends Controller
 {
     public function index(Request $request)
     {
-       /* $table   = 'comunas';
-        $columns = Schema::getColumnListing($table);
-
-        $columns = array_filter($columns, function ($column) {
-            return $column !== 'empId'; // Columna a excluir
-        });
-
-        $columns = array_values($columns); // Reindexar el array si es necesa
-        $filtros = $request['filter'];
-        $filtros = json_decode(base64_decode($filtros));
-        
-       if(isset($filtros)){       
-        $data     = viewComunas::query()->filter($filtros)->get();
-       }else{
-         $data    = viewComunas::select('*')->take(1500)->get();
-       }
-       
-        $resources = array(
-                "data"   => $data,
-                "colums" => $columns
-        );
-       
-        return response()->json($resources, 200);*/
-
+    
 
         $query = viewComunas::select('*')
         ->orderBy('comunas.created_at', 'desc')
@@ -73,8 +52,10 @@ class ComunaController extends Controller
         $filtros = json_decode(base64_decode($filtros));
        // return $filtros;
         if(isset($filtros)){   
+            $filters = $filtros->filters;
+            $sorting = $filtros->sorting;
         
-            $data     = viewComunas::query()->filter($filtros)
+            $data     = viewComunas::query()->filter($filters, $sorting)
             ->orderBy('comunas.created_at', 'desc')
             ->get();
         } else {
@@ -219,22 +200,56 @@ class ComunaController extends Controller
     function valEtiqeta(Request $request)
     {
         //Conectar a la api de etiqueta  por Guzzle
-       $pedidos = [
+
+        
+      $pedidos = [
+      'P1-c1575510512771-01',
+'P1-c1579420529403-01',
+'P1-c1579680532637-01',
+'P1-c1579930535333-01',
+'P1-c1580080536895-01',
+'P1-c1580110537343-01',
+'P1-c1580160538541-01',
+'P1-c1580270540207-01',
+'P1-c1580300540629-01',
+'P1-c1580380541959-01',
+'P1-c1581140545280-01',
+'P1-c1582000546877-01',
+'P1-c1582180547375-01',
+'P1-c1582270547607-01',
+'P1-c1582450548023-01',
+'P1-c1582780548945-01',
+'P1-c3063326230',
+'P1-c3214764169',
+'P1-c3214765158',
+'P1-c3216037257',
+'P1-c3216041483',
+'P1-c3216145942',
+'P1-c3218021210',
+'P1-v1579400535068-01',
+'P1-v1580100538451-01',
+'P1-v1581390541351-01',
+'P1-v1582330542487-01',
+'P1-v1582440542533-01',
+'P1-v2000010566676753',
+'P1-v2000014194318544',
+'P1-v3216042290',
+'P1-v3216761650'
+
+      ];
+
+
+      $chunks = array_chunk($pedidos, 20);
+      $count = count($chunks);  
+     
       
-'1559060503478-01',
-'f1bce232-e726-47af-beba-487790ac4dd9',
-'b7b2113c-b796-4307-9651-a343caf6f68c',
-'cbb86ccf-348b-48c7-810a-2f0bef55288f',
-'1560900504707-01',
-'2d47f453-a09c-412c-898c-6ca72d7b2b3e',
+        foreach ($chunks as $chunk) {
+         $job =new ValidaEtiqueta($chunk, 'C', 'CD01');
+         dispatch($job);
+        }
 
-
-
-        ];
-        $job = new ValidaEtiqueta($pedidos, 'C');
-        dispatch($job);
-        return "OK";   
-  
+        $fecha = now()->format('Y-m-d H:i:s');      
+        return "OK "."/".$count;
     
     }
 }

@@ -2,15 +2,28 @@
 
 use App\Http\Controllers\Oms\WebhookController;
 use App\Http\Controllers\Parametros\ComunaController;
+use App\Http\Controllers\Parametros\MonedaController;
+use App\Http\Controllers\Seguridad\TotpController;
 use App\Http\Controllers\Seguridad\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+  return view('welcome');
 });
 
-Route::post('logPda', [UserController::class, 'authenticateUserPda'] );
-Route::post('log'   , [UserController::class, 'authenticateUser'] );
+Route::post('logPda', [UserController::class, 'authenticateUserPda']);
+Route::post('log', [UserController::class, 'authenticateUser']);
+
+// Rutas TOTP
+Route::prefix('totp')->group(function () {
+  Route::post('/setup', [TotpController::class, 'setup']);
+  Route::post('/verify', [TotpController::class, 'verify']);
+  Route::post('/status', [TotpController::class, 'status']);
+  Route::post('/disable', [TotpController::class, 'disable']);
+});
+
+
+
 Route::middleware(['App\Http\Middleware\postMiddleware'])->group(function () {
   require __DIR__ . '/seguridad.php';
   require __DIR__ . '/parametros.php';
@@ -19,7 +32,7 @@ Route::middleware(['App\Http\Middleware\postMiddleware'])->group(function () {
   require __DIR__ . '/ventas.php';
   require __DIR__ . '/pda.php';
   //require __DIR__ . '/ventas.php';
-  
+
 
 });
 
@@ -30,21 +43,21 @@ Route::middleware(['App\Http\Middleware\sysAdmin'])->group(function () {
 
 //PAGO DE CLIENTE
 Route::middleware(['App\Http\Middleware\webPayMiddleware'])->group(function () {
- /* Route::get('ordenventa'     , [OrdenVentaController::class,'indexPago']);
+  /* Route::get('ordenventa'     , [OrdenVentaController::class,'indexPago']);
   Route::post('transbank'     , [OrdenVentaController::class,'transbank']);
   Route::post('transbankRe'   , [OrdenVentaController::class,'transbankRep']);
   Route::get('transbankRe'    , [OrdenVentaController::class,'transbankRe']);
   Route::get('statusTransbank', [OrdenVentaController::class,'statusTransbank']);*/
- 
 });
 
 
 require __DIR__ . '/weebhooksOms.php';
 
-Route::get('comuna'       , [ComunaController::class,'index']);
+Route::get('comuna', [ComunaController::class, 'index']);
+Route::post('estadoOrden', [WebhookController::class, 'estadoOrden']);
+Route::get('valEtiqeta', [ComunaController::class, 'valEtiqeta']);
 
-Route::post('estadoOrden'       , [WebhookController::class,'estadoOrden']);
+Route::get('dolar', [MonedaController::class, 'dolar']);
 
 
-
-Route::get('valEtiqeta', [ComunaController::class,'valEtiqeta']);
+Route::get('uf', [MonedaController::class, 'uf']);

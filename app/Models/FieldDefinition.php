@@ -19,7 +19,8 @@ class FieldDefinition extends Model
         'description',
         'data_type',
         'options',
-        'is_filterable'
+        'is_filterable',
+        'field_type'
     ];
 
     public function getCreatedAtAttribute($value){

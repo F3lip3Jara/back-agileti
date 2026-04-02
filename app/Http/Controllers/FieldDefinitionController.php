@@ -17,8 +17,7 @@ class FieldDefinitionController extends Controller
         return response()->json($fieldDefinition);
     }
 
-    public function updateFromExcel(Request $request) {
-     
+    public function updateFromExcel(Request $request) {   
         
             $data = $request->all();
             if (empty($data)) {
@@ -48,7 +47,8 @@ class FieldDefinitionController extends Controller
                     }
                    
                     $affected = FieldDefinition::where('id', $item['id'])->update([
-                        'label' => $item['label'],                       
+                        'label' => $item['label'],
+                        'data_type' => $item['data_type'],
                         'is_filterable' => $item['is_filterable']
                     ]);
                   

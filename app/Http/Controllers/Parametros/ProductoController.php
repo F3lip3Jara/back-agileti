@@ -48,8 +48,9 @@ class ProductoController extends Controller
         $filtros = json_decode(base64_decode($filtros));
        // return $filtros;
         if(isset($filtros)){   
-        
-            $data     = viewProductos::query()->filter($filtros)
+            $filters = $filtros->filters;
+            $sorting = $filtros->sorting;
+            $data     = viewProductos::query()->filter($filters, $sorting)
             ->orderBy('productos.created_at', 'desc')
             ->get();
         } else {

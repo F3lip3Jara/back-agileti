@@ -38,18 +38,23 @@ class OrdenProdController extends Controller
                 $columnDefinitions[] = [
                     'campo' => $definition->field_name,
                     'label' => $definition->label,
-                    'data_type' => $definition->data_type
+                    'data_type' => $definition->data_type,
+                    'field_type' => $definition->field_type,
+                    'options' => $definition->options
                 ];
             }
         } else {
             $columnDefinitions = [];
-        }
+        }      
 
-        $filtros = $request['filter'];
+        $filtros = $request['filter'];    
         $filtros = json_decode(base64_decode($filtros));
+        
        // return $filtros;
-        if(isset($filtros)){       
-            $data     = viewOrdenProduccion::query()->filter($filtros)
+        if(isset($filtros)){    
+            $filters = $filtros->filters;
+            $sorting = $filtros->sorting;   
+            $data     = viewOrdenProduccion::query()->filter($filters , $sorting)
             ->orderBy('orden_produccion.created_at', 'desc')
             ->where('empId', $request->empId)
             ->get();

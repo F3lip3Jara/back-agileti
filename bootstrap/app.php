@@ -200,6 +200,10 @@ return Application::configure(basePath: dirname(__DIR__))
             '/delSdUbicaciones',
             '/updSdUbicaciones',
             '/createPallet',
+            '/totp/status',
+            '/totp/setup',
+            '/totp/verify',
+            '/totp/disable',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

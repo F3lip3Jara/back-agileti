@@ -52,8 +52,10 @@ class SdOrdController extends Controller
         $filtros = json_decode(base64_decode($filtros));
        // return $filtros;
         if(isset($filtros)){       
+            $filters = $filtros->filters;
+            $sorting = $filtros->sorting;
             $data = SdOrden::query()   
-                    ->filter($filtros)                   
+                    ->filter($filters, $sorting)                   
                     ->get();
         } else {
             $data = SdOrden::select('*')

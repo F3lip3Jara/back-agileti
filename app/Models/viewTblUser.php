@@ -41,40 +41,39 @@ class viewTblUser extends Model
         ->toDateTimeString();
     }
 
+    public function scopeFilter($query, $filter, $sorting) 
+    {
+        foreach ($filter as $item) {
+            $column = $item->column;
+            $operator = $item->operator;
     
-public function scopeFilter($query, $filter) { 
-
-   
-    foreach($filter as $item){ 
-                        
-        $column = $item->column; 
-        $count  = 0;
-        $fecha_inicio = Carbon::create(2025, 1, 1);
-        $fecha_fin = Carbon::create(2025, 1, 31);
-        
-        if($column == "created_at"){
-            foreach($item->values as $value){
-                if($count == 0){
-                    $fecha_inicio = Carbon::create($value);
-                }else{
-                    $fecha_fin = Carbon::create($value);
-                }
-                $count++;
-            }    
-            $query->whereBetween('created_at', [$fecha_inicio, $fecha_fin]);
-        }else{
-            if( count( $item->values ) > 0 && $column != ""){  
-                foreach($item->values as $values){
-                    $query->orWhere($column, 'like', '%' . $values. '%');
-                }                  
-            }else{                
-                if($column != "" && count( $item->values ) > 0 ){
-                    $query->where($item->column, 'LIKE', '%' . $item->values[0]. '%');
-                }
-               
-            } 
+            if ($column == "created_at" && count($item->values) == 2) {
+                $fecha_inicio = Carbon::parse($item->values[0]);
+                $fecha_fin = Carbon::parse($item->values[1]);
+                $query->whereBetween('created_at', [$fecha_inicio, $fecha_fin]);
+            } else if (!empty($item->values) && $column != "") {
+                $query->where(function ($q) use ($item, $operator, $column) {
+                    foreach ($item->values as $i => $value) {
+                        if ($operator === 'like') {
+                            $i === 0
+                                ? $q->where($column, 'like', '%' . trim($value) . '%')
+                                : $q->orWhere($column, 'like', '%' . trim($value) . '%');
+                        } else {
+                            $i === 0
+                                ? $q->where($column, $operator, $value)
+                                : $q->orWhere($column, $operator, $value);
+                        }
+                    }
+                });
+            }
         }
-     
+    
+        // Sorting
+        if (count($sorting) > 0) {
+            foreach ($sorting as $item) {
+                $query->orderBy($item->column, $item->direction);
+            }
+        }
     }
- }
+
 }

@@ -25,7 +25,10 @@ class User extends Authenticatable
         'token',
         'rolId',
         'reinicio',
-        'empId'
+        'empId',
+        'twofa_secret',
+        'twofa_enabled',
+        'backup_codes'
     ];
 
     /**
@@ -48,6 +51,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'backup_codes' => 'array',
+            'twofa_enabled' => 'boolean'
         ];
     }
 }

@@ -122,6 +122,8 @@ class UserController extends Controller
                     'type' => 'danger'
                 )
             );
+
+            return $resources;
           
         }
 
@@ -258,8 +260,10 @@ class UserController extends Controller
         $filtros = $request['filter'];
         $filtros = json_decode(base64_decode($filtros));
        // return $filtros;
-        if(isset($filtros)){       
-            $data     = viewTblUser::query()->filter($filtros)
+        if(isset($filtros)){      
+            $filters = $filtros->filters;
+            $sorting = $filtros->sorting;    
+            $data     = viewTblUser::query()->filter($filters , $sorting)
             ->orderBy('tblusuarios.created_at', 'desc')
             ->where('empId', $request->empId)
             ->get();
@@ -707,4 +711,6 @@ class UserController extends Controller
 
        
     }
+
+  
 }
