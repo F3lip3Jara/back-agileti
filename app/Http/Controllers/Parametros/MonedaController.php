@@ -357,7 +357,8 @@ class MonedaController extends Controller
 
         $hoy = Carbon::now('America/Santiago');
         $diaAnterior = $hoy->copy()->subDay();
-        $this->regularizarMes($hoy, $diaAnterior);
+        $key  = env('CMF_API_KEY', false);
+        $this->regularizarMes($hoy, $diaAnterior, $key);
 
         // Si es fin de semana, retrocedemos al último día hábil
         if ($hoy->isWeekend()) {
