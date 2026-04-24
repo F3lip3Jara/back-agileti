@@ -26,7 +26,7 @@ class UserController extends Controller
     public function authenticateUser(Request $request)
     {
 
-        try{
+        try {
 
             $data     = $request->all();
             $rep      = json_decode(base64_decode($data['Authentication']));
@@ -36,101 +36,108 @@ class UserController extends Controller
             $crf      = '';
             $empNom   = '';
             $empApe   = '';
-            
-            
-        if (Auth::attempt(['name' => $email, 'password' => $password])) {
-            $token = Str::random(60);
-            $user  = Auth::user();
-            $activo = trim($user->activado);
-            if ($activo == 'A') {
-                $idUser = $user->id;
-                User::where('id', $idUser)
-                    ->update(['token' => $token]);             
-                 
-                $crf = csrf_token();
-                $imgx = Empleado::select('emploAvatar', 'emploNom' , 'emploApe')->where('id', $idUser)->get();
+            $keygoogle = '';
+            $keygoogleMap = '';
 
-                if(sizeof($imgx) > 0){
-                  $img    = $imgx[0]['emploAvatar'];
-                  $empNom = $imgx[0]['emploNom'];
-                  $empApe = $imgx[0]['emploApe'];
-                }else{
-                    $img = '';
-                }
-               
-                $xrol           =  Roles::select('rolDes')->where('rolId', $user->rolId)->get();
-                $rol            =  $xrol[0]['rolDes'];                
-                $xempresa       =  Empresa::select('empDes', 'empImg')->where('empId', $user->empId)->get();
-                $empresa        =  $xempresa[0]['empDes'];
-                $imgEmp         =  '';
-                $controller     =  new MenuController;
-                $menu           =  $controller->index($user->empId , $user->rolId);   
-              
-                $resources =
-                    array(
-                        'id'       => $user->id,
-                        'name'     => $user->name,
-                        'token'    => $token,
-                        'reinicio' => $user->reinicio,
-                        'crf'      => $crf,
-                        'img'      => $img,
-                        'rol'      => $rol,
-                        'empresa'  => $empresa,
-                        'menu'     => $menu,
-                        'imgEmp'   => $imgEmp,
-                        'empNom'   => $empNom,
-                        'empApe'   => $empApe,
-                        'error'    => '0'
+
+            if (Auth::attempt(['name' => $email, 'password' => $password])) {
+                $token = Str::random(60);
+                $user  = Auth::user();
+                $activo = trim($user->activado);
+                if ($activo == 'A') {
+                    $idUser = $user->id;
+                    User::where('id', $idUser)
+                        ->update(['token' => $token]);
+
+                    $crf = csrf_token();
+                    $imgx = Empleado::select('emploAvatar', 'emploNom', 'emploApe')->where('id', $idUser)->get();
+
+                    if (sizeof($imgx) > 0) {
+                        $img    = $imgx[0]['emploAvatar'];
+                        $empNom = $imgx[0]['emploNom'];
+                        $empApe = $imgx[0]['emploApe'];
+                    } else {
+                        $img = '';
+                    }
+
+                    $xrol           =  Roles::select('rolDes')->where('rolId', $user->rolId)->get();
+                    $rol            =  $xrol[0]['rolDes'];
+                    $xempresa       =  Empresa::select('empDes', 'empImg')->where('empId', $user->empId)->get();
+                    $empresa        =  $xempresa[0]['empDes'];
+                    $imgEmp         =  '';
+                    $controller     =  new MenuController;
+                    $menu           =  $controller->index($user->empId, $user->rolId);
+                    $keygoogleMap   =  env('GOOGLE_MAPS_API_KEY');
+                    $openWeatherApiKey = env('OPENWEATHERMAP_API_KEY');
+
+                    $resources =
+                        array(
+                            'id'       => $user->id,
+                            'name'     => $user->name,
+                            'token'    => $token,
+                            'reinicio' => $user->reinicio,
+                            'crf'      => $crf,
+                            'img'      => $img,
+                            'rol'      => $rol,
+                            'empresa'  => $empresa,
+                            'menu'     => $menu,
+                            'imgEmp'   => $imgEmp,
+                            'empNom'   => $empNom,
+                            'empApe'   => $empApe,
+                            'error'    => '0',
+                            'keygoogleMap' => $keygoogleMap,
+                            'openWeatherApiKey' => $openWeatherApiKey,
+                        );
+
+                    $etaId    = 1;
+                    $etaDesId = 1;
+                    $name     = $user->name;
+                    $empId    = $user->empId;
+                    // $encrypted =bcrypt($resources);
+                    $job = new LogSistema($etaId, $etaDesId, $name, $empId, 'LOGEO DE USUARIO', 'success');
+                    dispatch($job);
+                    //   event(new MensajeEvent('Hola desde el servidor'));
+
+                    return response()->json($resources, 200);
+                } else {
+                    $resources = array(
+                        array(
+                            "error" => "1",
+                            'mensaje' => "Usuario desactivado",
+                            'type' => 'danger'
+                        )
                     );
-                
-                  $etaId    = 1;
-                  $etaDesId = 1;
-                  $name     = $user->name;
-                  $empId    = $user->empId; 
-                 // $encrypted =bcrypt($resources);
-                  $job = new LogSistema($etaId , $etaDesId , $name , $empId , 'LOGEO DE USUARIO' , 'success');
-                  dispatch($job);
-               //   event(new MensajeEvent('Hola desde el servidor'));
-                
-                  return response()->json($resources, 200);
+                    $etaId    = 1;
+                    $etaDesId = 2;
+                    $name     = $user->name;
+                    $empId    = $user->empId;
+                    // $encrypted =bcrypt($resources);
+                    $job = new LogSistema($etaId, $etaDesId, $name, $empId, 'Error usuario desactivado', 'success');
+                    dispatch($job);
+                    return response()->json($resources, 203);
+                }
             } else {
+                $etaId    = 1;
+                $etaDesId = 3;
+                $name     = $email;
+                $empId    = 0;
+                $job = new LogSistema($etaId, $etaDesId, $name, $empId, 'Error usuario no logeado', 'success');
+                dispatch($job);
                 $resources = array(
                     array(
-                        "error" => "1", 'mensaje' => "Usuario desactivado",
+                        "error" => "1",
+                        'mensaje' => "El usuario no logeado",
                         'type' => 'danger'
                     )
                 );
-                $etaId    = 1;
-                $etaDesId = 2;
-                $name     = $user->name;
-                $empId    = $user->empId; 
-               // $encrypted =bcrypt($resources);
-                $job = new LogSistema($etaId , $etaDesId , $name , $empId , 'Error usuario desactivado' , 'success');
-                dispatch($job);
-                return response()->json($resources, 203);
+
+                return $resources;
             }
-        } else {
-            $etaId    = 1;
-            $etaDesId = 3;
-            $name     = $email;
-            $empId    = 0;
-            $job = new LogSistema($etaId , $etaDesId , $name , $empId , 'Error usuario no logeado' , 'success');
-            dispatch($job);
+        } catch (QueryException $ex) {
             $resources = array(
                 array(
-                    "error" => "1", 'mensaje' => "El usuario no logeado",
-                    'type' => 'danger'
-                )
-            );
-
-            return $resources;
-          
-        }
-
-        }catch(QueryException $ex){
-            $resources = array(
-                array(
-                    "error" => "1", 'mensaje' => "Error en el servidor",
+                    "error" => "1",
+                    'mensaje' => "Error en el servidor",
                     'type' => 'danger',
                     "des" => $ex
                 )
@@ -142,7 +149,7 @@ class UserController extends Controller
     public function authenticateUserPda(Request $request)
     {
 
-        try{
+        try {
 
             $data     = $request->all();
             $rep      = json_decode(base64_decode($data['Authentication']));
@@ -151,76 +158,78 @@ class UserController extends Controller
             $remember = '';
             $crf      = '';
 
-        if (Auth::attempt(['name' => $email, 'password' => $password], $remember)) {
-            $token = Str::random(60);
-            $user  = Auth::user();
-            $activo = trim($user->activado);
-            
-            if ($activo == 'A') {
-                $idUser = $user->id;
-                User::where('id', $idUser)
-                    ->update(['token' => $token]);             
-                
-                $crf = csrf_token();
-                $imgx = Empleado::select('emploAvatar')->where('id', $idUser)->get();
+            if (Auth::attempt(['name' => $email, 'password' => $password], $remember)) {
+                $token = Str::random(60);
+                $user  = Auth::user();
+                $activo = trim($user->activado);
 
-                if(sizeof($imgx) > 0){
-                  $img  = $imgx[0]['emploAvatar'];
-                }else{
-                    $img = '';
-                }
+                if ($activo == 'A') {
+                    $idUser = $user->id;
+                    User::where('id', $idUser)
+                        ->update(['token' => $token]);
 
-                $xrol           =  Roles::select('rolDes')->where('rolId', $user->rolId)->get();
-                $rol            =  $xrol[0]['rolDes'];                
-                $xempresa       =  Empresa::select('empDes', 'empImg')->where('empId', $user->empId)->get();
-                $empresa        =  $xempresa[0]['empDes'];
-              
-                
-                $resources =
-                    array(
-                        'id'       => $user->id,
-                        'name'     => $user->name,
-                        'token'    => $token,
-                        'reinicio' => $user->reinicio,
-                        'crf'      => $crf,
-                        'img'      => $img,
-                        'rol'      => $rol,
-                        'empresa'  => $empresa,
-                        'error'    => '0'
+                    $crf = csrf_token();
+                    $imgx = Empleado::select('emploAvatar')->where('id', $idUser)->get();
+
+                    if (sizeof($imgx) > 0) {
+                        $img  = $imgx[0]['emploAvatar'];
+                    } else {
+                        $img = '';
+                    }
+
+                    $xrol           =  Roles::select('rolDes')->where('rolId', $user->rolId)->get();
+                    $rol            =  $xrol[0]['rolDes'];
+                    $xempresa       =  Empresa::select('empDes', 'empImg')->where('empId', $user->empId)->get();
+                    $empresa        =  $xempresa[0]['empDes'];
+
+
+                    $resources =
+                        array(
+                            'id'       => $user->id,
+                            'name'     => $user->name,
+                            'token'    => $token,
+                            'reinicio' => $user->reinicio,
+                            'crf'      => $crf,
+                            'img'      => $img,
+                            'rol'      => $rol,
+                            'empresa'  => $empresa,
+                            'error'    => '0'
+                        );
+
+                    $etaId    = 1;
+                    $etaDesId = 1;
+                    $name     = $user->name;
+                    $empId    = $user->empId;
+
+                    $job = new LogSistema($etaId, $etaDesId, $name, $empId, 'LOGEO DE USUARIO PDA', 'success');
+                    dispatch($job);
+                    //   event(new MensajeEvent('Hola desde el servidor'));
+                    return response()->json($resources, 200);
+                } else {
+                    $resources = array(
+                        array(
+                            "error" => "1",
+                            'mensaje' => "Usuario desactivado",
+                            'type' => 'danger'
+                        )
                     );
-                
-                  $etaId    = 1;
-                  $etaDesId = 1;
-                  $name     = $user->name;
-                  $empId    = $user->empId; 
-                 
-                  $job = new LogSistema($etaId , $etaDesId , $name , $empId , 'LOGEO DE USUARIO PDA' , 'success');
-                  dispatch($job);
-               //   event(new MensajeEvent('Hola desde el servidor'));
-                  return response()->json($resources, 200);
+                    return response()->json($resources, 203);
+                }
             } else {
                 $resources = array(
                     array(
-                        "error" => "1", 'mensaje' => "Usuario desactivado",
+                        "error" => "1",
+                        'mensaje' => "El usuario no logeado",
                         'type' => 'danger'
                     )
                 );
-                return response()->json($resources, 203);
+                return response()->json($resources, 200);
             }
-        } else {
+        } catch (QueryException $ex) {
             $resources = array(
                 array(
-                    "error" => "1", 'mensaje' => "El usuario no logeado",
-                    'type' => 'danger'
-                )
-            );
-            return response()->json($resources, 200);
-        }
-
-        }catch(QueryException $ex){
-            $resources = array(
-                array(
-                    "error" => "1", 'mensaje' => "Error en el servidor",
+                    "error" => "1",
+                    'mensaje' => "Error en el servidor",
                     'type' => 'danger',
                     "des" => $ex
                 )
@@ -234,12 +243,12 @@ class UserController extends Controller
 
         //return $data = viewTblUser::select('*')->where('empId', $request['empId'])->get();
         $query = viewTblUser::select('*')
-        ->where('empId', $request->empId) 
-        ->orderBy('tblusuarios.created_at', 'desc')
-        ->first();
+            ->where('empId', $request->empId)
+            ->orderBy('tblusuarios.created_at', 'desc')
+            ->first();
 
         if ($query) {
-            $columns = array_keys($query->toArray());            
+            $columns = array_keys($query->toArray());
             // Obtener definiciones de campos filtrables
             $fieldDefinitions = FieldDefinition::whereIn('field_name', $columns)
                 ->where('is_filterable', 1)
@@ -259,27 +268,26 @@ class UserController extends Controller
 
         $filtros = $request['filter'];
         $filtros = json_decode(base64_decode($filtros));
-       // return $filtros;
-        if(isset($filtros)){      
+        // return $filtros;
+        if (isset($filtros)) {
             $filters = $filtros->filters;
-            $sorting = $filtros->sorting;    
-            $data     = viewTblUser::query()->filter($filters , $sorting)
-            ->orderBy('tblusuarios.created_at', 'desc')
-            ->where('empId', $request->empId)
-            ->get();
+            $sorting = $filtros->sorting;
+            $data     = viewTblUser::query()->filter($filters, $sorting)
+                ->orderBy('tblusuarios.created_at', 'desc')
+                ->where('empId', $request->empId)
+                ->get();
         } else {
             $data     = viewTblUser::select('*')
-                         ->where('empId', $request->empId)
-                         ->orderBy('tblusuarios.created_at', 'desc')
-                        ->take(1500)->get();
+                ->where('empId', $request->empId)
+                ->orderBy('tblusuarios.created_at', 'desc')
+                ->take(1500)->get();
         }
-       
+
         $resources = array(
             "data" => $data,
             "columns" => $columnDefinitions
         );
-        return response()->json($resources, 200); 		
-    
+        return response()->json($resources, 200);
     }
 
     public function trabUsuariosAmd(Request $request)
@@ -291,9 +299,9 @@ class UserController extends Controller
     {
         $token = $request->header('access-token');
         $datos  = viewTblUser::select('*')
-                ->where('empId', $request['empId'])
-                ->where('id',$request['idUser'])
-                ->get();
+            ->where('empId', $request['empId'])
+            ->where('id', $request['idUser'])
+            ->get();
         return response()->json($datos, 200);
     }
 
@@ -321,7 +329,8 @@ class UserController extends Controller
                 if ($usuariox == $name && $header == $token) {
                     $resources = array(
                         array(
-                            "error" => "99", 'mensaje' => "Usuario valido",
+                            "error" => "99",
+                            'mensaje' => "Usuario valido",
                             'type' => 'success'
                         )
                     );
@@ -329,7 +338,8 @@ class UserController extends Controller
                 } else {
                     $resources = array(
                         array(
-                            "error" => "4", 'mensaje' => "Usuario invalido",
+                            "error" => "4",
+                            'mensaje' => "Usuario invalido",
                             'type' => 'danger'
                         )
                     );
@@ -338,7 +348,8 @@ class UserController extends Controller
             } else {
                 $resources = array(
                     array(
-                        "error" => "3", 'mensaje' => "Sin datos encontrados",
+                        "error" => "3",
+                        'mensaje' => "Sin datos encontrados",
                         'type' => 'danger'
                     )
                 );
@@ -346,7 +357,8 @@ class UserController extends Controller
         } else {
             $resources = array(
                 array(
-                    "error" => "2", 'mensaje' => "Usuario invalido",
+                    "error" => "2",
+                    'mensaje' => "Usuario invalido",
                     'type' => 'danger'
                 )
             );
@@ -354,84 +366,84 @@ class UserController extends Controller
     }
 
     public function valUsuario(Request $request)
-    {  
+    {
         $data   = request()->all();
         $name   = $data['emploName'];
         $empId  = $request['empId'];
         $val    = User::select('name')
-                        ->where('name', $name)
-                        ->where('empId', $empId)
-                        ->get();
+            ->where('name', $name)
+            ->where('empId', $empId)
+            ->get();
         $count  = 0;
-            foreach ($val as $item) {
-                    $count = $count + 1;
-                }
+        foreach ($val as $item) {
+            $count = $count + 1;
+        }
         return $count;
     }
 
     public function ins_Users(Request $request)
-    {         
+    {
         $data            = request()->all();
         $usuario         = $data['usuario'];
         $empId           = $request['empId'];
         $nameI           = $request['name'];
-        $emp             = $request['emp'];       
-        $name            = $usuario['name'];        
+        $emp             = $request['emp'];
+        $name            = $usuario['name'];
         $imgName         = $usuario['emploAvatar'];
         $password        = $name;
         $emploNom        = strtoupper($usuario['empName']);
-        $emploApe        = strtoupper($usuario['emploApe']);     
-        $fecha           = Carbon::parse( $usuario['emploFecNac']);
+        $emploApe        = strtoupper($usuario['emploApe']);
+        $fecha           = Carbon::parse($usuario['emploFecNac']);
         $fechaFormateada = $fecha->format('Y-m-d'); // Formato: 2025-02-13
-        try{
+        try {
             $emploFecNac = $fechaFormateada;
-        }catch(Exception $ex){
-            $emploFecNac = $fecha;          
+        } catch (Exception $ex) {
+            $emploFecNac = $fecha;
             //2025-02-13T03:00:00.000Z
         }
-       
+
         $rolId       = $usuario['rol'];
         $gerId       = $usuario['gerId'];
-     
-            $affect =User::create([
-                    'email'    => '',
-                    'password' => bcrypt($password),
-                    'name'     => $name,
-                    'imgName'  => '',
-                    'activado' => 'A',
-                    'token'    => '',
-                    'rolId'    => $rolId,
-                    'reinicio' => 'S',
-                    'empId'    => $empId
 
-                ]);
-              
+        $affect = User::create([
+            'email'    => '',
+            'password' => bcrypt($password),
+            'name'     => $name,
+            'imgName'  => '',
+            'activado' => 'A',
+            'token'    => '',
+            'rolId'    => $rolId,
+            'reinicio' => 'S',
+            'empId'    => $empId
 
-                Empleado::create([
-                    'id'          => $affect->id,
-                    'emploNom'    => $emploNom,
-                    'emploApe'    => $emploApe,
-                    'emploFecNac' => $emploFecNac,
-                    'emploAvatar' => $imgName,
-                    'empId'       => $empId,
-                    'gerId'       => $gerId
+        ]);
 
-                ]);
 
-                $job = new LogSistema( $request->log['0']['optId'] , $request->log['0']['accId'] , $name , $empId , $request->log['0']['accDes'], $request->log['0']['accTip']);
-                 dispatch($job);                
-                $resources = array(
-                    array("error" => '0', 'mensaje' => $request->log['0']['accMessage'], 'type' => $request->log['0']['accType'])
-                );
-                return response()->json($resources, 200);
+        Empleado::create([
+            'id'          => $affect->id,
+            'emploNom'    => $emploNom,
+            'emploApe'    => $emploApe,
+            'emploFecNac' => $emploFecNac,
+            'emploAvatar' => $imgName,
+            'empId'       => $empId,
+            'gerId'       => $gerId
+
+        ]);
+
+        $job = new LogSistema($request->log['0']['optId'], $request->log['0']['accId'], $name, $empId, $request->log['0']['accDes'], $request->log['0']['accTip']);
+        dispatch($job);
+        $resources = array(
+            array("error" => '0', 'mensaje' => $request->log['0']['accMessage'], 'type' => $request->log['0']['accType'])
+        );
+        return response()->json($resources, 200);
     }
 
     public function up(Request $request)
-    {   
+    {
         $rest    = request()->all();
         $data    = json_decode(base64_decode($rest['user']));
         $usuario = $data->usuario;
-    
+
         $user = User::find($usuario->id);
 
         if (!$user) {
@@ -442,30 +454,28 @@ class UserController extends Controller
 
             return response()->json($resources, 404);
         }
-    
+
         $empleado = Empleado::select('id')->where('id', $usuario->id)->get();
 
         if (!$empleado) {
-
-           
         }
-    
+
         $dataToUpdate = [
             'rolId' => $usuario->rol > 0 ? $usuario->rol : $user->rolId,
             'reinicio' => 'N',
         ];
 
-      
-    
+
+
         if ($usuario->mantenerPassword === 1) {
             $dataToUpdate['password'] = bcrypt($usuario->password);
         }
-        
-    
-         $user->update($dataToUpdate);
-        
-        
-        
+
+
+        $user->update($dataToUpdate);
+
+
+
         $valida = Empleado::where('id', $usuario->id)->update([
             'emploNom'    => $usuario->empName,
             'emploApe'    => $usuario->emploApe,
@@ -473,9 +483,9 @@ class UserController extends Controller
             'gerId'       => $usuario->gerId ?: 0,
             'emploAvatar' => $usuario->emploAvatar,
         ]);
-    
-        $job = new LogSistema($request->log['0']['optId'], $request->log['0']['accId'], $request->name, $request->empId, $request->log['0']['accDes'] , $request->log['0']['accTip']);
-        dispatch($job);    
+
+        $job = new LogSistema($request->log['0']['optId'], $request->log['0']['accId'], $request->name, $request->empId, $request->log['0']['accDes'], $request->log['0']['accTip']);
+        dispatch($job);
         $resources = array(
             array("error" => '0', 'mensaje' => $request->log['0']['accMessage'], 'type' => $request->log['0']['accType'])
         );
@@ -485,11 +495,10 @@ class UserController extends Controller
     function getUsuarios(Request $request)
     {
         $xid    = $request->userid;
-        $datos   = User::select('emploAvatar', 'gerId' , 'users.id')
-        ->join('parm_empleados', 'users.id', '=', 'parm_empleados.id')
-        ->where('users.id', $xid)->get();
+        $datos   = User::select('emploAvatar', 'gerId', 'users.id')
+            ->join('parm_empleados', 'users.id', '=', 'parm_empleados.id')
+            ->where('users.id', $xid)->get();
         return response()->json($datos, 200);
-
     }
 
     public function upUsuario2(Request $request)
@@ -498,7 +507,7 @@ class UserController extends Controller
             $data = request()->all();
             $json = base64_decode($data['user'], true);
             $usuario = json_decode($json);
-         
+
             if (json_last_error() !== JSON_ERROR_NONE) {
                 $resources = array(
                     array("error" => '1', 'mensaje' => 'Error al decodificar datos del usuario: ' . json_last_error_msg(), 'type' => 'danger')
@@ -508,7 +517,7 @@ class UserController extends Controller
             // return $usuario; // Comentado para evitar retorno prematuro
             $empId = $data['empId'];
             $idUser = $data['idUser'];
-            
+
             $emploAvatar  =  $usuario->emploAvatar ?? '';
             $name     =  $usuario->name ?? '';
             $emploNom = $usuario->empName ?? '';
@@ -518,43 +527,43 @@ class UserController extends Controller
             $newPassword = $usuario->newPassword;
             $id = User::where('id', $idUser)->get();
 
-         //   return $id;
+            //   return $id;
 
-            if($mantenerPassword == 1){
-              //valida si la password es igual a la actual y si es asi actualizo el usuario
-              if(Hash::check($password, User::find($idUser)->password)){
-                $valida = User::where('id', $idUser)->update([
-                    'password' => bcrypt($newPassword)
+            if ($mantenerPassword == 1) {
+                //valida si la password es igual a la actual y si es asi actualizo el usuario
+                if (Hash::check($password, User::find($idUser)->password)) {
+                    $valida = User::where('id', $idUser)->update([
+                        'password' => bcrypt($newPassword)
+                    ]);
+                } else {
+                    $resources = array(
+                        array("error" => '1', 'mensaje' => 'Contraseña actual incorrecta', 'type' => 'danger')
+                    );
+                    return response()->json($resources, 200);
+                }
+            }
+
+            $valida = Empleado::find($idUser);
+            //si encuentro el usuario actualizo el avatar   
+            if ($valida->emploId > 0) {
+
+                $valida = Empleado::where('id', $idUser)->update([
+                    'emploAvatar' => $emploAvatar,
+                    'emploNom'    => $emploNom,
+                    'emploApe'    => $emploApe
                 ]);
-              }else{
+                $job = new LogSistema($request->log['0']['optId'], $request->log['0']['accId'], $name, $empId, $request->log['0']['accDes'], $request->log['0']['accTip']);
+                dispatch($job);
                 $resources = array(
-                    array("error" => '1', 'mensaje' => 'Contraseña actual incorrecta', 'type' => 'danger')
+                    array("error" => '0', 'mensaje' => $request->log['0']['accMessage'], 'type' => $request->log['0']['accType'])
                 );
                 return response()->json($resources, 200);
-              }
-            }          
-                
-            $valida = Empleado::find($idUser);             
-             //si encuentro el usuario actualizo el avatar   
-            if ($valida->emploId > 0) {    
-                                    
-                    $valida = Empleado::where('id', $idUser)->update([
-                        'emploAvatar' => $emploAvatar,
-                        'emploNom'    => $emploNom,
-                        'emploApe'    => $emploApe                      
-                    ]);
-                $job = new LogSistema( $request->log['0']['optId'] , $request->log['0']['accId'] , $name , $empId , $request->log['0']['accDes'], $request->log['0']['accTip']);
-                dispatch($job);                
-                $resources = array(
-                    array("error" => '0', 'mensaje' => $request->log['0']['accMessage'], 'type' => $request->log['0']['accType'])
-                );    
-                return response()->json($resources, 200);
             } else {
-                $job = new LogSistema( $request->log['0']['optId'] , $request->log['0']['accId'] , $name , $empId , $request->log['0']['accDes'], $request->log['0']['accTip']);
-                dispatch($job);                
+                $job = new LogSistema($request->log['0']['optId'], $request->log['0']['accId'], $name, $empId, $request->log['0']['accDes'], $request->log['0']['accTip']);
+                dispatch($job);
                 $resources = array(
                     array("error" => '0', 'mensaje' => $request->log['0']['accMessage'], 'type' => $request->log['0']['accType'])
-                );    
+                );
                 return response()->json($resources, 200);
             }
         } catch (Exception $ex) {
@@ -568,39 +577,38 @@ class UserController extends Controller
     function getUsuario(Request $request)
     {
         return $request;
-
     }
 
-    function reiniciar(Request $request){
+    function reiniciar(Request $request)
+    {
         $rest        = request()->all();
-        $data        = json_decode(base64_decode($rest['user'])); 
-        $xname       = $data->name; 
+        $data        = json_decode(base64_decode($rest['user']));
+        $xname       = $data->name;
         $xid         = $data->usrid;
-        try{
+        try {
             $empId       = $rest['empId'];
-
-        }catch(Exception $error){
-            $empId       = $data->empId; 
-
-        }      
+        } catch (Exception $error) {
+            $empId       = $data->empId;
+        }
         $name        = $rest['name'];
-        $user        = User::find($xid);       
-        $valida      = $user->update([               
+        $user        = User::find($xid);
+        $valida      = $user->update([
             'password' => bcrypt($xname),
             'reinicio' => 'S'
         ]);
 
-        if ($valida == 1) {                        
-             $job = new LogSistema( $request->log['0']['optId'] , $request->log['0']['accId'] , $name , $empId , $request->log['0']['accDes'], $request->log['0']['accTip']);
-               dispatch($job);                
+        if ($valida == 1) {
+            $job = new LogSistema($request->log['0']['optId'], $request->log['0']['accId'], $name, $empId, $request->log['0']['accDes'], $request->log['0']['accTip']);
+            dispatch($job);
             $resources = array(
                 array("error" => '0', 'mensaje' => $request->log['0']['accMessage'], 'type' => $request->log['0']['accType'])
             );
-            return response()->json($resources, 200);                       
+            return response()->json($resources, 200);
         } else {
             $resources = array(
                 array(
-                    "error" => "1", 'mensaje' => "Error en el servidor",
+                    "error" => "1",
+                    'mensaje' => "Error en el servidor",
                     'type' => 'danger'
                 )
             );
@@ -609,40 +617,41 @@ class UserController extends Controller
     }
 
 
-    function deshabilitar(Request $request){ 
-      
+    function deshabilitar(Request $request)
+    {
+
         $rest        = request()->all();
-        $data        = json_decode(base64_decode($rest['user'])); 
-        $xname       = $data->name; 
+        $data        = json_decode(base64_decode($rest['user']));
+        $xname       = $data->name;
         $xid         = $data->usrid;
         $name        = $rest['name'];
         $user        = User::find($xid);
-       
-        $valida      = $user->update([               
+
+        $valida      = $user->update([
             'password' => bcrypt($xname),
             'reinicio' => 'S',
             'activado' => 'D'
         ]);
 
-        try{
+        try {
             $empId       = $rest['empId'];
-
-        }catch(Exception $error){
-            $empId       = $data->empId; 
+        } catch (Exception $error) {
+            $empId       = $data->empId;
         }
 
 
-        if ($valida == 1) {                        
-            $job = new LogSistema( $request->log['0']['optId'] , $request->log['0']['accId'] , $name , $empId , $request->log['0']['accDes'], $request->log['0']['accTip']);
-            dispatch($job);                
+        if ($valida == 1) {
+            $job = new LogSistema($request->log['0']['optId'], $request->log['0']['accId'], $name, $empId, $request->log['0']['accDes'], $request->log['0']['accTip']);
+            dispatch($job);
             $resources = array(
                 array("error" => '0', 'mensaje' => $request->log['0']['accMessage'], 'type' => $request->log['0']['accType'])
             );
-            return response()->json($resources, 200);                       
+            return response()->json($resources, 200);
         } else {
             $resources = array(
                 array(
-                    "error" => "1", 'mensaje' => "Error en el servidor",
+                    "error" => "1",
+                    'mensaje' => "Error en el servidor",
                     'type' => 'danger'
                 )
             );
@@ -650,39 +659,40 @@ class UserController extends Controller
         }
     }
 
-    function habilitar(Request $request){ 
+    function habilitar(Request $request)
+    {
         $rest        = request()->all();
-        $data        = json_decode(base64_decode($rest['user'])); 
-        $xname       = $data->name; 
+        $data        = json_decode(base64_decode($rest['user']));
+        $xname       = $data->name;
         $xid         = $data->usrid;
         $name        = $rest['name'];
         $user        = User::find($xid);
 
-        try{
+        try {
             $empId       = $rest['empId'];
-
-        }catch(Exception $error){
-            $empId       = $data->empId; 
+        } catch (Exception $error) {
+            $empId       = $data->empId;
         }
 
-        $valida      = $user->update([               
+        $valida      = $user->update([
             'password' => bcrypt($xname),
             'reinicio' => 'S',
             'activado' => 'A'
         ]);
 
-        if ($valida == 1) {                        
-            $job = new LogSistema( $request->log['0']['optId'] , $request->log['0']['accId'] , $name , $empId , $request->log['0']['accDes'], $request->log['0']['accTip']);
+        if ($valida == 1) {
+            $job = new LogSistema($request->log['0']['optId'], $request->log['0']['accId'], $name, $empId, $request->log['0']['accDes'], $request->log['0']['accTip']);
 
-                dispatch($job);                
+            dispatch($job);
             $resources = array(
                 array("error" => '0', 'mensaje' => $request->log['0']['accMessage'], 'type' => $request->log['0']['accType'])
             );
-            return response()->json($resources, 200);                       
+            return response()->json($resources, 200);
         } else {
             $resources = array(
                 array(
-                    "error" => "1", 'mensaje' => "Error en el servidor",
+                    "error" => "1",
+                    'mensaje' => "Error en el servidor",
                     'type' => 'danger'
                 )
             );
@@ -690,17 +700,18 @@ class UserController extends Controller
         }
     }
 
-    function cambiarPassword(Request $request){
+    function cambiarPassword(Request $request)
+    {
         $rest        = request()->all();
         $data        = json_decode(base64_decode($rest['Authentication']));
-        $xname       = $rest['name']; 
+        $xname       = $rest['name'];
         $xid         = $rest['idUser'];
         $user        = User::find($xid);
         $currentPassword = $data->currentPassword;
 
         if (!Hash::check($currentPassword, $user->password)) {
             return response()->json(['error' => '1', 'mensaje' => 'Contraseña actual incorrecta', 'type' => 'danger'], 200);
-        }else{
+        } else {
             $valida = $user->update([
                 'password' => bcrypt($data->newPassword),
                 'reinicio' => 'N',
@@ -708,9 +719,5 @@ class UserController extends Controller
             ]);
             return response()->json(['error' => '0', 'mensaje' => 'Contraseña actualizada correctamente', 'type' => 'success'], 200);
         }
-
-       
     }
-
-  
 }
