@@ -21,17 +21,18 @@ jobs:
       - name: Setup Docker
         run: gcloud auth configure-docker --quiet
 
-      # 3. Construir y subir la imagen al repositorio que ya tienes
+      # 3. Construir y subir la imagen al repositorio en us-west1 (Oregón)
       - name: Build and Push Image
         run: |
-          docker build -t southamerica-east1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/laravel-app:latest .
-          docker push southamerica-east1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/laravel-app:latest
+          # La URL ahora empieza con us-west1-docker.pkg.dev
+          docker build -t us-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/laravel-app:latest .
+          docker push us-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/laravel-app:latest
 
-      # 4. Desplegar en Cloud Run usando esa imagen
+      # 4. Desplegar en Cloud Run usando la imagen de Oregón
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: back-agileti
-          region: southamerica-east1
-          image: southamerica-east1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/laravel-app:latest
+          region: us-west1 # Desplegamos también en Oregón para evitar latencia
+          image: us-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/laravel-app:latest
           flags: "--update-secrets=/var/www/html/.env=Laravel-env:latest"
