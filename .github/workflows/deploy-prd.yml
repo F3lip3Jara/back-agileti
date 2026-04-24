@@ -1,0 +1,38 @@
+name: Deploy Laravel PRD
+on:
+  push:
+    branches:
+      - main # Cambia esto si tu rama principal se llama 'master'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      # 1. Autenticación con Google Cloud
+      - name: Google Auth
+        uses: "google-github-actions/auth@v2"
+        with:
+          credentials_json: "${{ secrets.GCP_SA_KEY }}"
+
+      # 2. Configurar Docker para Google Cloud
+      - name: Setup Docker
+        run: gcloud auth configure-docker --quiet
+
+      # 3. Construir y subir la imagen de Docker (El contenedor)
+      - name: Build and Push Image
+        run: |
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/back-agileti:latest .
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/back-agileti:latest
+
+      # 4. Desplegar en Cloud Run
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: back-agileti # Nombre de tu servicio en Cloud Run
+          region: southamerica-east1 # Región de Chile
+          image: gcr.io/${{ secrets.GCP_PROJECT_ID }}/back-agileti:latest
+          # Inyectar el archivo .env desde Secret Manager
+          flags: "--update-secrets=/var/www/html/.env=Laravel-env:latest"
