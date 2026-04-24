@@ -1,38 +1,43 @@
 name: Deploy Laravel PRD
+
 on:
   push:
     branches:
-      - main # Cambia esto si tu rama principal se llama 'master'
+      - main # Asegúrate de que tu rama se llame 'main' (o cámbialo a 'master')
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout del código
+      # 1. Descargar el código del repositorio
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 1. Autenticación con Google Cloud
+      # 2. Autenticación con Google Cloud usando tu Secreto JSON
       - name: Google Auth
         uses: "google-github-actions/auth@v2"
         with:
           credentials_json: "${{ secrets.GCP_SA_KEY }}"
 
-      # 2. Configurar Docker para Google Cloud
-      - name: Setup Docker
-        run: gcloud auth configure-docker --quiet
+      # 3. Configurar Docker con el Helper de la región us-west1 (Oregón)
+      # Esto arregla el error de "Unauthenticated request"
+      - name: Setup Docker Helper
+        run: |
+          gcloud auth configure-docker us-west1-docker.pkg.dev --quiet
 
-      # 3. Construir y subir la imagen al repositorio en us-west1 (Oregón)
+      # 4. Construir y Subir la imagen al repositorio existente
       - name: Build and Push Image
         run: |
-          # La URL ahora empieza con us-west1-docker.pkg.dev
           docker build -t us-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/laravel-app:latest .
           docker push us-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/laravel-app:latest
 
-      # 4. Desplegar en Cloud Run usando la imagen de Oregón
+      # 5. Desplegar en Cloud Run inyectando el .env desde Secret Manager
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: back-agileti
-          region: us-west1 # Desplegamos también en Oregón para evitar latencia
+          region: us-west1
           image: us-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/cloud-run-source-deploy/laravel-app:latest
+          # Montamos el secreto 'Laravel-env' como el archivo .env real dentro del contenedor
           flags: "--update-secrets=/var/www/html/.env=Laravel-env:latest"
