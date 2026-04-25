@@ -31,8 +31,8 @@ Route::middleware(['App\Http\Middleware\postMiddleware'])->group(function () {
   require __DIR__ . '/sd.php';
   require __DIR__ . '/ventas.php';
   require __DIR__ . '/pda.php';
+  require __DIR__ . '/gym.php';
   //require __DIR__ . '/ventas.php';
-
 
 });
 
