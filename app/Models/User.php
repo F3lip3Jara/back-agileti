@@ -55,4 +55,14 @@ class User extends Authenticatable
             'twofa_enabled' => 'boolean'
         ];
     }
+
+    public function gymProfile()
+    {
+        return $this->hasOne(GymProfile::class, 'user_id');
+    }
+
+    public function gymBranchRestrictions()
+    {
+        return $this->hasMany(GymBranchRestriction::class, 'user_id');
+    }
 }

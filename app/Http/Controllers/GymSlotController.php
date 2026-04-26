@@ -4,26 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Models\GymSlot;
 use Illuminate\Http\Request;
+use App\Models\ViewCalendarStatus;
 
 class GymSlotController extends Controller
 {
     public function index(Request $request)
     {
-        // Obtener bloques de fecha actual en adelante, unidos a su calendario diario
-        // Para esto usamos whereHas
-        $slots = GymSlot::with(['dailyCalendar.branch'])
+        $query = \App\Models\ViewCalendarStatus::with(['dailyCalendar.branch'])
           ->withCount(['reservations' => function ($query) {
               $query->where('status', 'confirmed');
-          }])
-          ->whereHas('dailyCalendar', function($query) {
-              $query->where('date', '>=', now()->toDateString());
-          })
-          // Ordenamos a través de un join para poder ordenar por fecha del daily_calendar
-          ->join('gym_daily_calendars', 'gym_slots.gym_daily_calendar_id', '=', 'gym_daily_calendars.id')
-          ->orderBy('gym_daily_calendars.date')
-          ->orderBy('gym_slots.start_time')
-          ->select('gym_slots.*') // Importante seleccionar solo slots para no sobreescribir ids
-          ->get();
+          }]);
+
+        if ($request->has('branch_id')) {
+            $branchId = $request->input('branch_id');
+            $query->whereHas('dailyCalendar', function($q) use ($branchId) {
+                $q->where('gym_branch_id', $branchId);
+            });
+        }
+
+        $slots = $query->get();
 
         // Mapear para agregar atributo de cupos disponibles fácilmente
         // Y aplanar la fecha para el frontend si la necesita directa
