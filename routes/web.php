@@ -5,6 +5,7 @@ use App\Http\Controllers\Parametros\ComunaController;
 use App\Http\Controllers\Parametros\MonedaController;
 use App\Http\Controllers\Seguridad\TotpController;
 use App\Http\Controllers\Seguridad\UserController;
+use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -61,3 +62,32 @@ Route::get('dolar', [MonedaController::class, 'dolar']);
 
 
 Route::get('uf', [MonedaController::class, 'uf']);
+
+
+Route::get('pruebaTokenMV', function () {
+
+  try {
+
+    $client = new Client([
+      'verify' => false,
+      'timeout' => 30,
+      'connect_timeout' => 30
+    ]);
+
+    $response = $client->request('POST', 'https://app.multivende.com/oauth/access-token', [
+      'headers' => [
+        'accept' => 'application/json'
+      ],
+      'body' => json_encode([
+        "client_id" => env("MVID"),
+        "client_secret" => env("MVSECRET"),
+        "grant_type" => "authorization_code",
+        "code" => env("MVCODE")
+      ])
+    ]);
+
+    return json_decode($response->getBody()->getContents());
+  } catch (Exception $e) {
+    return $e;
+  }
+});
