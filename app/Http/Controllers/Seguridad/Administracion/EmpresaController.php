@@ -19,14 +19,14 @@ class EmpresaController extends Controller
 {
     public function index(Request $request)
     {
-        return Empresa::select('empId','empDes','empDir','empRut','empGiro','empFono', 'empTokenOMS')->get();
+        return Empresa::select('empId','empDes','empDir','empRut','empGiro','empFono', 'empTokenOMS', 'empTiempoIdle', 'empTiempoTimeout', 'empTiempoExpiracionToken', 'empZonaHoraria')->get();
     } 
     
     public function index1(Request $request)
     {
 
        
-        return Empresa::select('empId','empDes','empDir','empRut','empGiro','empFono', 'empTokenOMS')
+        return Empresa::select('empId','empDes','empDir','empRut','empGiro','empFono', 'empTokenOMS', 'empTiempoIdle', 'empTiempoTimeout', 'empTiempoExpiracionToken', 'empZonaHoraria')
                         ->where('empId', $request['empId'])
                         ->get();
     }  
@@ -45,8 +45,11 @@ class EmpresaController extends Controller
                 'empGiro'   => $request->empGiro,
                 'empFono'   => $request->empFono,
                 'empImg'    => $request->empImg,
-                'empTokenOMS'=>$request->empTokenOMS
-
+                'empTokenOMS'=>$request->empTokenOMS,
+                'empTiempoIdle' => $request->empTiempoIdle ?? 900,
+                'empTiempoTimeout' => $request->empTiempoTimeout ?? 60,
+                'empTiempoExpiracionToken' => $request->empTiempoExpiracionToken ?? 1440,
+                'empZonaHoraria' => $request->empZonaHoraria ?? 'America/Santiago'
         ]);
 
         if (isset($affected)) {
@@ -140,7 +143,10 @@ class EmpresaController extends Controller
                 'empFono'   => $empresa['empFono'],
                 'empImg'    => $empresa['empImg'],
                 'empTokenOMS'=>$empresa['empTokenOMS'],
-                
+                'empTiempoIdle' => $empresa['empTiempoIdle'] ?? 900,
+                'empTiempoTimeout' => $empresa['empTiempoTimeout'] ?? 60,
+                'empTiempoExpiracionToken' => $empresa['empTiempoExpiracionToken'] ?? 1440,
+                'empZonaHoraria' => $empresa['empZonaHoraria'] ?? 'America/Santiago'
              ]
         );
 

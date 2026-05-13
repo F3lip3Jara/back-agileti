@@ -19,7 +19,11 @@ class Empresa extends Model
         'empGiro',
         'empFono',
         'empImg', 
-        'empTokenOMS'
+        'empTokenOMS',
+        'empTiempoIdle',
+        'empTiempoTimeout',
+        'empTiempoExpiracionToken',
+        'empZonaHoraria'
     ];
 
     public function getCreatedAtAttribute($value){

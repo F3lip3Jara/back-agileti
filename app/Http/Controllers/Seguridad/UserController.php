@@ -16,6 +16,7 @@ use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -41,13 +42,10 @@ class UserController extends Controller
 
 
             if (Auth::attempt(['name' => $email, 'password' => $password])) {
-                $token = Str::random(60);
                 $user  = Auth::user();
                 $activo = trim($user->activado);
                 if ($activo == 'A') {
                     $idUser = $user->id;
-                    User::where('id', $idUser)
-                        ->update(['token' => $token]);
 
                     $crf = csrf_token();
                     $imgx = Empleado::select('emploAvatar', 'emploNom', 'emploApe')->where('id', $idUser)->get();
@@ -62,8 +60,19 @@ class UserController extends Controller
 
                     $xrol           =  Roles::select('rolDes')->where('rolId', $user->rolId)->get();
                     $rol            =  $xrol[0]['rolDes'];
-                    $xempresa       =  Empresa::select('empDes', 'empImg')->where('empId', $user->empId)->get();
-                    $empresa        =  $xempresa[0]['empDes'];
+                    $xempresa       =  Empresa::select('empDes', 'empImg', 'empTiempoExpiracionToken', 'empTiempoIdle', 'empTiempoTimeout')->where('empId', $user->empId)->first();
+                    $empresa        =  $xempresa->empDes;
+                    $expirationMins =  $xempresa->empTiempoExpiracionToken ?? 1440;
+                    $empTiempoIdle = $xempresa->empTiempoIdle ?? 900;
+                    $empTiempoTimeout = $xempresa->empTiempoTimeout ?? 60;
+                    
+                    // Generate Sanctum Token
+                    $user->tokens()->delete(); // Clear previous tokens to maintain single active session if desired, or just create a new one.
+                    $token = $user->createToken('auth_token', ['*'], now()->addMinutes($expirationMins))->plainTextToken;
+                    
+                    // We still update the token field in users table temporarily if legacy systems use it, but Sanctum replaces it.
+                    User::where('id', $idUser)->update(['token' => $token]);
+
                     $imgEmp         =  '';
                     $controller     =  new MenuController;
                     $menu           =  $controller->index($user->empId, $user->rolId);
@@ -87,6 +96,9 @@ class UserController extends Controller
                             'error'    => '0',
                             'keygoogleMap' => $keygoogleMap,
                             'openWeatherApiKey' => $openWeatherApiKey,
+                            'empTiempoIdle' => $empTiempoIdle,
+                            'empTiempoTimeout' => $empTiempoTimeout,
+                            'empTiempoExpiracionToken' => $expirationMins
                         );
 
                     $etaId    = 1;
@@ -159,14 +171,11 @@ class UserController extends Controller
             $crf      = '';
 
             if (Auth::attempt(['name' => $email, 'password' => $password], $remember)) {
-                $token = Str::random(60);
                 $user  = Auth::user();
                 $activo = trim($user->activado);
 
                 if ($activo == 'A') {
                     $idUser = $user->id;
-                    User::where('id', $idUser)
-                        ->update(['token' => $token]);
 
                     $crf = csrf_token();
                     $imgx = Empleado::select('emploAvatar')->where('id', $idUser)->get();
@@ -179,8 +188,15 @@ class UserController extends Controller
 
                     $xrol           =  Roles::select('rolDes')->where('rolId', $user->rolId)->get();
                     $rol            =  $xrol[0]['rolDes'];
-                    $xempresa       =  Empresa::select('empDes', 'empImg')->where('empId', $user->empId)->get();
-                    $empresa        =  $xempresa[0]['empDes'];
+                    $xempresa       =  Empresa::select('empDes', 'empImg', 'empTiempoExpiracionToken', 'empTiempoIdle', 'empTiempoTimeout')->where('empId', $user->empId)->first();
+                    $empresa        =  $xempresa->empDes;
+                    $expirationMins =  $xempresa->empTiempoExpiracionToken ?? 1440;
+
+                    // Generate Sanctum Token
+                    $user->tokens()->delete(); // Clear previous tokens
+                    $token = $user->createToken('auth_token_pda', ['*'], now()->addMinutes($expirationMins))->plainTextToken;
+                    
+                    User::where('id', $idUser)->update(['token' => $token]);
 
 
                     $resources =
@@ -281,6 +297,14 @@ class UserController extends Controller
                 ->where('empId', $request->empId)
                 ->orderBy('tblusuarios.created_at', 'desc')
                 ->take(1500)->get();
+        }
+        
+        foreach ($data as $user) {
+            $token = DB::table('personal_access_tokens')
+                ->where('tokenable_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->first();
+            $user->token_expires_at = $token ? $token->expires_at : null;
         }
 
         $resources = array(

@@ -5,7 +5,6 @@ use App\Http\Controllers\Parametros\ComunaController;
 use App\Http\Controllers\Parametros\MonedaController;
 use App\Http\Controllers\Seguridad\TotpController;
 use App\Http\Controllers\Seguridad\UserController;
-use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -59,6 +58,4 @@ Route::post('estadoOrden', [WebhookController::class, 'estadoOrden']);
 Route::get('valEtiqeta', [ComunaController::class, 'valEtiqeta']);
 
 Route::get('dolar', [MonedaController::class, 'dolar']);
-
-
 Route::get('uf', [MonedaController::class, 'uf']);
