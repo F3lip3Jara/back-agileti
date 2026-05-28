@@ -23,7 +23,7 @@ class CorsMiddleware
             return response('', 200, [
                 'Access-Control-Allow-Origin' => $origin,
                 'Access-Control-Allow-Methods' => 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
-                'Access-Control-Allow-Headers' => 'Content-Type, Authorization, X-Requested-With, X-CSRF-TOKEN, Accept, Origin, X-API-Key, X-App-Version, X-Platform, Cache-Control, X-File-Name, Pragma, Expires, If-Modified-Since, If-None-Match, ETag, Last-Modified, access-token',
+                'Access-Control-Allow-Headers' => 'Content-Type, Authorization, X-Requested-With, X-CSRF-TOKEN, X-XSRF-TOKEN, x-xsrf-token, Accept, Origin, X-API-Key, X-App-Version, X-Platform, Cache-Control, X-File-Name, Pragma, Expires, If-Modified-Since, If-None-Match, ETag, Last-Modified, access-token',
                 'Access-Control-Allow-Credentials' => 'true',
                 'Access-Control-Max-Age' => '86400',
             ]);
@@ -35,13 +35,13 @@ class CorsMiddleware
         if (method_exists($response, 'header')) {
             $response->header('Access-Control-Allow-Origin', $origin);
             $response->header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-            $response->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, X-CSRF-TOKEN, Accept, Origin, X-API-Key, X-App-Version, X-Platform, Cache-Control, X-File-Name, Pragma, Expires, If-Modified-Since, If-None-Match, ETag, Last-Modified, access-token');
+            $response->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, X-CSRF-TOKEN, X-XSRF-TOKEN, x-xsrf-token, Accept, Origin, X-API-Key, X-App-Version, X-Platform, Cache-Control, X-File-Name, Pragma, Expires, If-Modified-Since, If-None-Match, ETag, Last-Modified, access-token');
             $response->header('Access-Control-Allow-Credentials', 'true');
             $response->header('Access-Control-Max-Age', '86400');
         } elseif (property_exists($response, 'headers')) {
             $response->headers->set('Access-Control-Allow-Origin', $origin);
             $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-            $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, X-CSRF-TOKEN, Accept, Origin, X-API-Key, X-App-Version, X-Platform, Cache-Control, X-File-Name, Pragma, Expires, If-Modified-Since, If-None-Match, ETag, Last-Modified, access-token');
+            $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, X-CSRF-TOKEN, X-XSRF-TOKEN, x-xsrf-token, Accept, Origin, X-API-Key, X-App-Version, X-Platform, Cache-Control, X-File-Name, Pragma, Expires, If-Modified-Since, If-None-Match, ETag, Last-Modified, access-token');
             $response->headers->set('Access-Control-Allow-Credentials', 'true');
             $response->headers->set('Access-Control-Max-Age', '86400');
         }

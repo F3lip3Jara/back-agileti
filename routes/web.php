@@ -8,8 +8,15 @@ use App\Http\Controllers\Seguridad\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-  return view('welcome');
+    return redirect()->route('admin.login');
 });
+
+// Rutas de Autenticación de Administración
+Route::get('/admin/login', [\App\Http\Controllers\Seguridad\AdminAuthController::class, 'showLoginForm'])->name('login');
+Route::post('/admin/login', [\App\Http\Controllers\Seguridad\AdminAuthController::class, 'login'])->name('admin.login');
+Route::post('/admin/logout', [\App\Http\Controllers\Seguridad\AdminAuthController::class, 'logout'])->name('logout');
+Route::get('/admin/dashboard', [\App\Http\Controllers\Seguridad\AdminAuthController::class, 'showDashboard'])->middleware('auth')->name('admin.dashboard');
+
 
 Route::post('logPda', [UserController::class, 'authenticateUserPda']);
 Route::post('log', [UserController::class, 'authenticateUser']);
@@ -33,6 +40,8 @@ Route::middleware(['App\Http\Middleware\postMiddleware'])->group(function () {
   require __DIR__ . '/pda.php';
   require __DIR__ . '/gym.php';
   //require __DIR__ . '/ventas.php';
+  require __DIR__ . '/orchestrator.php';
+
 
 });
 

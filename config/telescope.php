@@ -95,7 +95,9 @@ return [
     'middleware' => [
         'web',
         Authorize::class,
-    ],
+        //Validar que el usuario esté logeado para acceder
+        \App\Http\Middleware\CheckAdminLogin::class,
+    ],  
 
     /*
     |--------------------------------------------------------------------------

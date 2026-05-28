@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Seguridad\TotpController;
+use App\Http\Controllers\Orchestrator\TaskController;
+use App\Http\Controllers\Orchestrator\LinearWebhookController;
 
 // Rutas TOTP
 Route::prefix('totp')->group(function () {

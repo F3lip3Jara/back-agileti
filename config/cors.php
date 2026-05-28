@@ -206,6 +206,8 @@ return [
         'Authorization',
         'X-Requested-With',
         'X-CSRF-TOKEN',
+        'X-XSRF-TOKEN',
+        'x-xsrf-token',
         'Accept',
         'Origin',
         'X-API-Key',
